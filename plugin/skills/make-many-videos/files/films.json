@@ -1,0 +1,9 @@
+{
+  "entry": "src/index.ts",
+  "shared": ["src/kit", "remotion.config.ts", "package-lock.json"],
+  "flags": ["--concurrency=4", "--color-space=bt709", "--offthreadvideo-cache-size-in-bytes=800000000"],
+  "chunk": 60,
+  "films": {
+    "film-01": ["src/films/film-01.tsx", "public/films/film-01"]
+  }
+}

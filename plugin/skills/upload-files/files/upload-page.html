@@ -1,0 +1,1509 @@
+<title>Send Your Files</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link
+	rel="stylesheet"
+	href="https://fonts.googleapis.com/css2?family=Archivo:wght@600;700&family=IBM+Plex+Mono:wght@400;500;600&family=IBM+Plex+Sans:wght@400;500;600&display=swap"
+/>
+<style>
+	:root {
+		--ground: #edefec;
+		--surface: #fafbf9;
+		--ink: #15191a;
+		--muted: #57615e;
+		--line: #d2d8d4;
+		--accent: #1d5fd1;
+		--accent-ink: #ffffff;
+		--accent-soft: #dfe8f8;
+		--done: #1f7a48;
+		--warn: #8a5300;
+		--bad: #b42318;
+		--reel: #dce1dd;
+		--display:
+			'Archivo', ui-sans-serif, system-ui, -apple-system, 'Segoe UI', sans-serif;
+		--body:
+			'IBM Plex Sans', ui-sans-serif, system-ui, -apple-system, 'Segoe UI',
+			sans-serif;
+		--mono:
+			'IBM Plex Mono', ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+	}
+	@media (prefers-color-scheme: dark) {
+		:root:not([data-theme='light']) {
+			color-scheme: dark;
+			--ground: #101315;
+			--surface: #171b1e;
+			--ink: #e5e9e7;
+			--muted: #97a19e;
+			--line: #2b3235;
+			--accent: #6f9df3;
+			--accent-ink: #0a1220;
+			--accent-soft: #1b2638;
+			--done: #5cc48a;
+			--warn: #e3a94b;
+			--bad: #f07167;
+			--reel: #262c2f;
+		}
+	}
+	:root[data-theme='dark'] {
+		color-scheme: dark;
+		--ground: #101315;
+		--surface: #171b1e;
+		--ink: #e5e9e7;
+		--muted: #97a19e;
+		--line: #2b3235;
+		--accent: #6f9df3;
+		--accent-ink: #0a1220;
+		--accent-soft: #1b2638;
+		--done: #5cc48a;
+		--warn: #e3a94b;
+		--bad: #f07167;
+		--reel: #262c2f;
+	}
+
+	body {
+		background: var(--ground);
+		color: var(--ink);
+		font-family: var(--body);
+		font-size: 15px;
+		line-height: 1.55;
+		padding-inline: 16px;
+	}
+	.wrap {
+		max-width: 640px;
+		margin: 0 auto;
+		padding-block: 40px 64px;
+		display: flex;
+		flex-direction: column;
+		gap: 28px;
+	}
+	header {
+		display: flex;
+		flex-direction: column;
+		gap: 8px;
+	}
+	.eyebrow {
+		font-family: var(--mono);
+		font-size: 12px;
+		letter-spacing: 0.08em;
+		text-transform: uppercase;
+		color: var(--muted);
+		margin: 0;
+	}
+	h1 {
+		font-family: var(--display);
+		font-weight: 700;
+		font-size: clamp(30px, 7vw, 42px);
+		line-height: 1.05;
+		letter-spacing: -0.01em;
+		margin: 0;
+		text-wrap: balance;
+	}
+	.lede {
+		margin: 0;
+		color: var(--muted);
+		max-width: 60ch;
+	}
+	h2 {
+		font-family: var(--display);
+		font-weight: 600;
+		font-size: 19px;
+		line-height: 1.2;
+		margin: 0;
+		text-wrap: balance;
+	}
+
+	.drop {
+		border: 1.5px dashed var(--line);
+		border-radius: 14px;
+		background: var(--surface);
+		padding-block: 36px;
+		padding-inline: 20px;
+		display: grid;
+		justify-items: center;
+		gap: 12px;
+		text-align: center;
+		transition:
+			border-color 0.15s,
+			background-color 0.15s;
+	}
+	.drop.over {
+		border-color: var(--accent);
+		background: var(--accent-soft);
+	}
+	.drop.locked {
+		opacity: 0.6;
+	}
+	.drop p {
+		margin: 0;
+	}
+	.hint {
+		font-size: 13px;
+		color: var(--muted);
+	}
+
+	.btn {
+		appearance: none;
+		border: 0;
+		border-radius: 8px;
+		background: var(--accent);
+		color: var(--accent-ink);
+		font: 600 15px/1 var(--body);
+		padding: 12px 18px;
+		cursor: pointer;
+		display: inline-flex;
+		align-items: center;
+		gap: 8px;
+	}
+	.btn.quiet {
+		background: transparent;
+		color: var(--ink);
+		box-shadow: inset 0 0 0 1.5px var(--line);
+	}
+	.btn:focus-visible,
+	.pick:focus-within {
+		outline: 3px solid var(--accent);
+		outline-offset: 2px;
+	}
+	.btn[disabled],
+	.pick.disabled {
+		opacity: 0.5;
+		cursor: not-allowed;
+	}
+	.pick {
+		border-radius: 8px;
+	}
+	.sr {
+		position: absolute;
+		width: 1px;
+		height: 1px;
+		overflow: hidden;
+		clip: rect(0 0 0 0);
+		white-space: nowrap;
+	}
+
+	.job {
+		background: var(--surface);
+		border: 1px solid var(--line);
+		border-radius: 14px;
+		padding: 20px;
+		display: flex;
+		flex-direction: column;
+		gap: 14px;
+	}
+	.file-name {
+		font-weight: 600;
+		margin: 0;
+		overflow-wrap: anywhere;
+	}
+	.mono {
+		font-family: var(--mono);
+		font-size: 12.5px;
+		color: var(--muted);
+		font-variant-numeric: tabular-nums;
+		margin: 0;
+	}
+	.reels {
+		display: flex;
+		gap: 4px;
+		height: 30px;
+	}
+	.reels.dense {
+		gap: 2px;
+	}
+	.reel {
+		flex: 1 1 0;
+		min-width: 2px;
+		border-radius: 4px;
+		background: var(--reel);
+		position: relative;
+		overflow: hidden;
+	}
+	.reel.done {
+		background: var(--accent);
+	}
+	.reel.failed {
+		background: var(--bad);
+	}
+	.reel.active::after {
+		content: '';
+		position: absolute;
+		inset: 0;
+		background: linear-gradient(
+			90deg,
+			transparent,
+			var(--accent) 50%,
+			transparent
+		);
+		opacity: 0.6;
+		animation: sweep 1.2s linear infinite;
+	}
+	@keyframes sweep {
+		from {
+			transform: translateX(-100%);
+		}
+		to {
+			transform: translateX(100%);
+		}
+	}
+	@media (prefers-reduced-motion: reduce) {
+		.reel.active::after {
+			animation: none;
+			opacity: 0.35;
+		}
+	}
+	.status {
+		margin: 0;
+		font-weight: 500;
+	}
+	.status.ok {
+		color: var(--done);
+	}
+	.status.err {
+		color: var(--bad);
+	}
+	.status.warn {
+		color: var(--warn);
+	}
+	.row {
+		display: flex;
+		flex-wrap: wrap;
+		gap: 10px;
+		align-items: center;
+	}
+
+	.received {
+		display: flex;
+		flex-direction: column;
+		gap: 10px;
+	}
+	.list {
+		list-style: none;
+		margin: 0;
+		padding: 0;
+		border-top: 1px solid var(--line);
+	}
+	.list li {
+		display: grid;
+		grid-template-columns: minmax(0, 1fr) auto;
+		gap: 2px 12px;
+		padding-block: 12px;
+		border-bottom: 1px solid var(--line);
+	}
+	.list .name {
+		font-weight: 500;
+		overflow-wrap: anywhere;
+	}
+	.list .mono {
+		grid-column: 1 / -1;
+	}
+	.chip {
+		font: 600 12px/1 var(--mono);
+		padding: 5px 9px;
+		border-radius: 999px;
+		align-self: start;
+		white-space: nowrap;
+		background: var(--reel);
+		color: var(--muted);
+	}
+	.chip.complete {
+		background: color-mix(in srgb, var(--done) 16%, transparent);
+		color: var(--done);
+	}
+	.chip.partial {
+		background: color-mix(in srgb, var(--warn) 16%, transparent);
+		color: var(--warn);
+	}
+	.empty {
+		margin: 0;
+		color: var(--muted);
+	}
+	.fine {
+		font-size: 13px;
+		color: var(--muted);
+		margin: 0;
+		max-width: 62ch;
+	}
+	.fine b {
+		color: var(--ink);
+		font-weight: 600;
+	}
+	.queue {
+		display: flex;
+		flex-direction: column;
+		gap: 16px;
+	}
+	.queue-head {
+		display: flex;
+		flex-wrap: wrap;
+		justify-content: space-between;
+		align-items: baseline;
+		gap: 4px 12px;
+	}
+	.note {
+		display: grid;
+		gap: 4px;
+	}
+	.note label {
+		font-size: 12.5px;
+		color: var(--muted);
+	}
+	.note input {
+		font: 400 14px/1.3 var(--body);
+		color: var(--ink);
+		background: var(--ground);
+		border: 1px solid var(--line);
+		border-radius: 8px;
+		padding: 8px 10px;
+		width: 100%;
+		box-sizing: border-box;
+	}
+	.note input:focus-visible {
+		outline: 3px solid var(--accent);
+		outline-offset: 1px;
+	}
+	.waiting {
+		list-style: none;
+		margin: 0;
+		padding: 0;
+		border-top: 1px solid var(--line);
+	}
+	.waiting li {
+		display: grid;
+		grid-template-columns: minmax(0, 1fr) auto;
+		gap: 6px 12px;
+		padding-block: 12px;
+		border-bottom: 1px solid var(--line);
+	}
+	.waiting .mono,
+	.waiting .note,
+	.waiting .msg {
+		grid-column: 1 / -1;
+	}
+	.msg {
+		margin: 0;
+		font-size: 13.5px;
+		color: var(--bad);
+	}
+	.chips {
+		display: flex;
+		gap: 6px;
+		align-items: start;
+	}
+	.btn.small {
+		font-size: 13px;
+		padding: 7px 11px;
+	}
+	.list .said {
+		grid-column: 1 / -1;
+		font-size: 13.5px;
+		color: var(--ink);
+		margin: 0;
+	}
+</style>
+
+<main class="wrap">
+	<header>
+		<p class="eyebrow">Your video project · files in</p>
+		<h1>Send your files</h1>
+		<p class="lede">
+			Send everything your video needs: recordings, music, logos, photos,
+			scripts or notes. Choose several files at once, and add more while the
+			first ones are still sending. Big files travel in small pieces called
+			reels. Claude joins them back into your original file and checks every
+			byte before it starts work.
+		</p>
+	</header>
+
+	<section id="drop" class="drop" aria-labelledby="drop-title">
+		<h2 id="drop-title">Drop files here</h2>
+		<p class="hint">
+			Videos (MP4, MOV, WebM, MKV), audio (M4A, MP3, WAV), images and text
+			(VTT, SRT, TXT, JSON). A meeting recording folder can go in whole: pick
+			every file in it. Files stay exactly as they are.
+		</p>
+		<label class="pick" id="pick">
+			<input class="sr" id="file" type="file" multiple />
+			<span class="btn">Choose files</span>
+		</label>
+		<p class="mono" id="space">Checking storage space…</p>
+		<p class="status warn" id="drop-msg" hidden></p>
+	</section>
+
+	<section id="queue" class="job queue" hidden aria-labelledby="queue-title">
+		<div class="queue-head">
+			<h2 id="queue-title">Sending</h2>
+			<p class="mono" id="queue-summary"></p>
+		</div>
+		<div id="current" hidden aria-live="polite">
+			<p class="file-name" id="job-name"></p>
+			<p class="mono" id="job-meta"></p>
+		</div>
+		<div
+			class="reels"
+			id="reels"
+			role="img"
+			aria-label="Upload progress by reel"
+		></div>
+		<p class="status" id="status" aria-live="polite"></p>
+		<p class="mono" id="progress"></p>
+		<div class="note" id="job-note-box" hidden>
+			<label for="job-note">What is this file? (optional)</label>
+			<input
+				id="job-note"
+				type="text"
+				maxlength="200"
+				placeholder="e.g. my camera, shared screen, the second half"
+			/>
+		</div>
+		<div class="row">
+			<button class="btn" id="continue" type="button" hidden>Continue</button>
+			<button class="btn quiet" id="pause" type="button" hidden>
+				Pause after this reel
+			</button>
+		</div>
+		<ul class="waiting" id="waiting" aria-label="Files waiting to send"></ul>
+	</section>
+
+	<section class="received" aria-labelledby="received-title">
+		<h2 id="received-title">Received</h2>
+		<p class="empty" id="empty">
+			Nothing received yet. Each file appears here as it arrives, and this list
+			is what Claude reads to fetch it.
+		</p>
+		<ul class="list" id="list"></ul>
+	</section>
+
+	<p class="fine">
+		<b>Keep this page open until every file says Received.</b> If the connection
+		drops or you close the page, choose the same files again: each one picks up
+		after its last finished reel, and a file already received is skipped. If a
+		file's name does not say what it is, give it a note, and Claude reads it. If
+		your files are bigger than the space shown, tell Claude in the chat before
+		you start.
+	</p>
+</main>
+
+<script>
+	(function () {
+		'use strict';
+
+		// Each stored piece must stay under the 20 MiB per-file limit.
+		var CHUNK = 19 * 1024 * 1024;
+		var TEXT_TYPES = {
+			vtt: 'text/plain',
+			srt: 'text/plain',
+			txt: 'text/plain',
+			log: 'text/plain',
+			sbv: 'text/plain',
+			conf: 'text/plain',
+			json: 'application/json',
+			csv: 'text/csv',
+			md: 'text/markdown',
+		};
+		var AUDIO_EXT = /\.(m4a|aac|mp3|wav|flac|ogg|opus)$/i;
+		var VIDEO_EXT = /\.(mp4|mov|m4v|webm|mkv|avi|mts|m2ts|3gp|mpg|mpeg)$/i;
+
+		var el = function (id) {
+			return document.getElementById(id);
+		};
+		var state = {
+			assets: null,
+			db: null,
+			usage: null,
+			uploads: [],
+			queue: [],
+			current: null,
+			busy: false,
+			held: false,
+			lock: null,
+			batch:
+				new Date().toISOString().slice(0, 16) +
+				'-' +
+				Math.random().toString(36).slice(2, 6),
+		};
+		var rows = {};
+		var nextQid = 1;
+
+		function fmtSize(b) {
+			if (!isFinite(b)) return '';
+			if (b >= 1e9) return (b / 1e9).toFixed(2) + ' GB';
+			if (b >= 1e6) return (b / 1e6).toFixed(1) + ' MB';
+			return Math.max(1, Math.round(b / 1e3)) + ' kB';
+		}
+		function fmtDur(s) {
+			if (!isFinite(s) || s <= 0) return '';
+			s = Math.round(s);
+			var h = Math.floor(s / 3600),
+				m = Math.floor((s % 3600) / 60),
+				x = s % 60;
+			var mm = h ? String(m).padStart(2, '0') : String(m);
+			return (h ? h + ':' : '') + mm + ':' + String(x).padStart(2, '0');
+		}
+		function sleep(ms) {
+			return new Promise(function (r) {
+				setTimeout(r, ms);
+			});
+		}
+		function hex(buf) {
+			return Array.prototype.map
+				.call(new Uint8Array(buf), function (b) {
+					return b.toString(16).padStart(2, '0');
+				})
+				.join('');
+		}
+		function ext(name) {
+			var m = /\.([a-z0-9]+)$/i.exec(name || '');
+			return m ? m[1].toLowerCase() : '';
+		}
+		function kindOf(file) {
+			if (TEXT_TYPES[ext(file.name)]) return 'text';
+			if (
+				(file.type || '').indexOf('video/') === 0 ||
+				VIDEO_EXT.test(file.name)
+			)
+				return 'video';
+			if (
+				(file.type || '').indexOf('audio/') === 0 ||
+				AUDIO_EXT.test(file.name)
+			)
+				return 'audio';
+			return 'other';
+		}
+		var KIND_LABEL = {
+			video: 'Video',
+			audio: 'Audio',
+			text: 'Text',
+			other: 'File',
+		};
+		// Binary files travel as pieces labelled with a type the store accepts;
+		// the label only decides how a piece is served, and the joined file is
+		// byte-for-byte the original. Text goes whole, under its own type.
+		function pieceType(file, kind) {
+			if (kind === 'text') return TEXT_TYPES[ext(file.name)];
+			return /\.(webm|mkv)$/i.test(file.name) || file.type === 'video/webm'
+				? 'video/webm'
+				: 'video/mp4';
+		}
+		function sameFile(d, file) {
+			return (
+				d.name === file.name &&
+				d.size === file.size &&
+				d.lastModified === file.lastModified
+			);
+		}
+
+		// The store refuses a binary piece whose first non-blank byte is "<",
+		// so a boundary that lands on one moves back until it does not.
+		async function startsWithMarkup(file, pos) {
+			var p = pos;
+			while (p < file.size) {
+				var bytes = new Uint8Array(
+					await file.slice(p, Math.min(p + 256, file.size)).arrayBuffer(),
+				);
+				for (var k = 0; k < bytes.length; k++) {
+					var b = bytes[k];
+					if (
+						b === 0x20 ||
+						b === 0x09 ||
+						b === 0x0a ||
+						b === 0x0d ||
+						b === 0x0c
+					)
+						continue;
+					return b === 0x3c;
+				}
+				p += 256;
+			}
+			return false;
+		}
+		async function planEnds(file) {
+			var ends = [],
+				start = 0;
+			while (start < file.size) {
+				var end = Math.min(start + CHUNK, file.size);
+				while (
+					end < file.size &&
+					end > start + 1 &&
+					(await startsWithMarkup(file, end))
+				)
+					end--;
+				ends.push(end);
+				start = end;
+			}
+			return ends;
+		}
+
+		function readMeta(file, kind) {
+			return new Promise(function (resolve) {
+				if (kind !== 'video' && kind !== 'audio') {
+					resolve({});
+					return;
+				}
+				var url;
+				try {
+					url = URL.createObjectURL(file);
+				} catch (e) {
+					resolve({});
+					return;
+				}
+				var v = document.createElement(kind === 'audio' ? 'audio' : 'video');
+				var t;
+				var done = function (m) {
+					clearTimeout(t);
+					v.removeAttribute('src');
+					try {
+						URL.revokeObjectURL(url);
+					} catch (e) {}
+					resolve(m);
+				};
+				t = setTimeout(function () {
+					done({});
+				}, 8000);
+				v.preload = 'metadata';
+				v.muted = true;
+				v.onloadedmetadata = function () {
+					done({
+						duration: v.duration,
+						width: v.videoWidth || 0,
+						height: v.videoHeight || 0,
+					});
+				};
+				v.onerror = function () {
+					done({});
+				};
+				v.src = url;
+			});
+		}
+
+		function metaLine(d) {
+			var parts = [fmtSize(d.size)];
+			if (d.width && d.height) parts.push(d.width + '×' + d.height);
+			if (d.duration) parts.push(fmtDur(d.duration));
+			return parts.filter(Boolean).join(' · ');
+		}
+
+		// ---- UI ---------------------------------------------------------------
+
+		function setStatus(text, kind) {
+			var s = el('status');
+			s.textContent = text;
+			s.className = 'status' + (kind ? ' ' + kind : '');
+		}
+		function renderSpace() {
+			var u = state.usage,
+				s = el('space');
+			if (!state.assets) return;
+			if (!u || !u.maxBytes) {
+				s.textContent = '';
+				return;
+			}
+			var line =
+				'Space: ' +
+				fmtSize(Math.max(0, u.maxBytes - u.bytes)) +
+				' free of ' +
+				fmtSize(u.maxBytes);
+			var pending = toSend();
+			if (pending > 0) line += ' · ' + fmtSize(pending) + ' still to send';
+			s.textContent = line;
+		}
+		function toSend() {
+			return state.queue.reduce(function (sum, q) {
+				if (q.state === 'done' || q.state === 'failed') return sum;
+				var sent =
+					q.chunks && q.chunks.length ? q.chunks[q.chunks.length - 1].end : 0;
+				return sum + (q.file.size - sent);
+			}, 0);
+		}
+		function renderReels() {
+			var q = state.current,
+				box = el('reels');
+			box.textContent = '';
+			if (!q || !q.ends) return;
+			box.classList.toggle('dense', q.ends.length > 30);
+			for (var i = 0; i < q.ends.length; i++) {
+				var r = document.createElement('span');
+				r.className = 'reel';
+				if (i < q.chunks.length) r.classList.add('done');
+				box.appendChild(r);
+			}
+		}
+		function markReel(i, cls) {
+			var r = el('reels').children[i];
+			if (!r) return;
+			r.classList.remove('active', 'failed');
+			if (cls) r.classList.add(cls);
+		}
+		function renderProgress() {
+			var q = state.current;
+			if (!q || !q.ends) {
+				el('progress').textContent = '';
+				return;
+			}
+			var sent = q.chunks.length ? q.chunks[q.chunks.length - 1].end : 0;
+			var line =
+				fmtSize(sent) +
+				' of ' +
+				fmtSize(q.file.size) +
+				' · reel ' +
+				Math.min(
+					q.chunks.length + (q.state === 'done' ? 0 : 1),
+					q.ends.length,
+				) +
+				' of ' +
+				q.ends.length;
+			if (q.sentMs > 1500 && q.sentBytes > 0 && q.state !== 'done') {
+				var rate = q.sentBytes / (q.sentMs / 1000);
+				var left = toSend() / rate;
+				line +=
+					' · ' +
+					fmtSize(rate) +
+					'/s · about ' +
+					(left < 90
+						? Math.max(5, Math.round(left / 5) * 5) + ' s'
+						: Math.round(left / 60) + ' min') +
+					' left for everything';
+			}
+			el('progress').textContent = line;
+		}
+		function renderSummary() {
+			var active = state.queue.filter(function (q) {
+				return q.state !== 'done';
+			});
+			var done = state.queue.length - active.length;
+			el('queue').hidden = state.queue.length === 0;
+			el('queue-summary').textContent =
+				done +
+				' of ' +
+				state.queue.length +
+				(state.queue.length === 1 ? ' file' : ' files') +
+				' sent';
+			el('pause').hidden = !state.busy;
+			renderSpace();
+		}
+		function showCurrent(q) {
+			el('current').hidden = !q;
+			el('job-note-box').hidden = !q;
+			if (!q) {
+				el('reels').textContent = '';
+				el('progress').textContent = '';
+				return;
+			}
+			el('job-name').textContent = q.file.name;
+			var line = [
+				KIND_LABEL[q.kind],
+				metaLine({
+					size: q.file.size,
+					width: q.meta.width,
+					height: q.meta.height,
+					duration: q.meta.duration,
+				}),
+			]
+				.filter(Boolean)
+				.join(' · ');
+			if (q.ends)
+				line +=
+					' · ' + q.ends.length + (q.ends.length === 1 ? ' reel' : ' reels');
+			el('job-meta').textContent = line;
+			var note = el('job-note');
+			if (document.activeElement !== note) note.value = q.note || '';
+		}
+
+		// Waiting rows are built once and updated in place, so a note being
+		// typed is never wiped by a progress update.
+		function renderWaiting() {
+			var ul = el('waiting');
+			var shown = state.queue.filter(function (q) {
+				return q !== state.current && q.state !== 'done';
+			});
+			var keep = {};
+			shown.forEach(function (q) {
+				keep[q.qid] = true;
+				var row = rows[q.qid];
+				if (!row) {
+					row = buildRow(q);
+					rows[q.qid] = row;
+				}
+				updateRow(q, row);
+				ul.appendChild(row.li);
+			});
+			Object.keys(rows).forEach(function (id) {
+				if (!keep[id]) {
+					rows[id].li.remove();
+					delete rows[id];
+				}
+			});
+		}
+		function buildRow(q) {
+			var li = document.createElement('li');
+			var name = document.createElement('span');
+			name.className = 'name';
+			name.textContent = q.file.name;
+			var chips = document.createElement('span');
+			chips.className = 'chips';
+			var chip = document.createElement('span');
+			chip.className = 'chip';
+			var remove = document.createElement('button');
+			remove.type = 'button';
+			remove.className = 'btn quiet small';
+			remove.textContent = 'Remove';
+			remove.addEventListener('click', function () {
+				state.queue = state.queue.filter(function (x) {
+					return x !== q;
+				});
+				render();
+			});
+			chips.appendChild(chip);
+			chips.appendChild(remove);
+			var meta = document.createElement('span');
+			meta.className = 'mono';
+			var msg = document.createElement('p');
+			msg.className = 'msg';
+			var box = document.createElement('div');
+			box.className = 'note';
+			var label = document.createElement('label');
+			label.htmlFor = 'note-' + q.qid;
+			label.textContent = 'What is this file? (optional)';
+			var input = document.createElement('input');
+			input.id = 'note-' + q.qid;
+			input.type = 'text';
+			input.maxLength = 200;
+			input.placeholder = "e.g. my camera, shared screen, meeting chat";
+			input.value = q.note || '';
+			input.addEventListener('input', function () {
+				q.note = input.value;
+			});
+			box.appendChild(label);
+			box.appendChild(input);
+			li.appendChild(name);
+			li.appendChild(chips);
+			li.appendChild(meta);
+			li.appendChild(msg);
+			li.appendChild(box);
+			return {li: li, chip: chip, remove: remove, meta: meta, msg: msg};
+		}
+		function updateRow(q, row) {
+			var label =
+				{
+					waiting: 'Waiting',
+					stopped: 'Stopped',
+					failed: 'Not sent',
+				}[q.state] || 'Waiting';
+			row.chip.textContent = KIND_LABEL[q.kind] + ' · ' + label;
+			row.chip.className = 'chip' + (q.state === 'failed' ? ' partial' : '');
+			row.meta.textContent = metaLine({
+				size: q.file.size,
+				width: q.meta.width,
+				height: q.meta.height,
+				duration: q.meta.duration,
+			});
+			row.msg.textContent = q.message || '';
+			row.msg.hidden = !q.message;
+		}
+
+		function renderList() {
+			var ul = el('list');
+			ul.textContent = '';
+			el('empty').hidden = state.uploads.length > 0;
+			var list = state.uploads.slice().sort(function (a, b) {
+				return String(b.data.startedAt || '').localeCompare(
+					String(a.data.startedAt || ''),
+				);
+			});
+			list.forEach(function (u) {
+				var d = u.data || {};
+				var li = document.createElement('li');
+				var name = document.createElement('span');
+				name.className = 'name';
+				name.textContent = String(d.name || 'Untitled file');
+				var chip = document.createElement('span');
+				var total = Array.isArray(d.ends) ? d.ends.length : 0;
+				var got = Array.isArray(d.chunks) ? d.chunks.length : 0;
+				if (d.status === 'complete') {
+					chip.className = 'chip complete';
+					chip.textContent = 'Received';
+				} else {
+					var mine =
+						state.current && state.current.docId === u.id && state.busy;
+					chip.className = 'chip partial';
+					chip.textContent = mine
+						? 'Sending ' + got + '/' + total
+						: 'Stopped at ' + got + '/' + total;
+				}
+				var meta = document.createElement('span');
+				meta.className = 'mono';
+				var when = '';
+				try {
+					when = new Date(d.completedAt || d.startedAt).toLocaleString([], {
+						dateStyle: 'medium',
+						timeStyle: 'short',
+					});
+				} catch (e) {}
+				meta.textContent = [KIND_LABEL[d.kind] || '', metaLine(d), when]
+					.filter(Boolean)
+					.join(' · ');
+				li.appendChild(name);
+				li.appendChild(chip);
+				li.appendChild(meta);
+				if (d.note) {
+					var said = document.createElement('p');
+					said.className = 'said';
+					said.textContent = '“' + String(d.note) + '”';
+					li.appendChild(said);
+				}
+				ul.appendChild(li);
+			});
+		}
+		function render() {
+			renderSummary();
+			renderWaiting();
+			showCurrent(state.current);
+		}
+
+		// ---- storage ------------------------------------------------------------
+
+		async function refreshUsage() {
+			if (!state.assets) return;
+			try {
+				var res = await state.assets.list();
+				state.usage = res && res.usage ? res.usage : null;
+			} catch (e) {
+				state.usage = null;
+			}
+			renderSpace();
+		}
+
+		async function uploadPiece(blob, type) {
+			try {
+				return await state.assets.upload(blob, {type: type});
+			} catch (e) {
+				var c = e && e.code;
+				if (c === 'store_unavailable' || c === 'upstream_error') {
+					await sleep(2500 + Math.random() * 1500);
+					return await state.assets.upload(blob, {type: type});
+				}
+				throw e;
+			}
+		}
+		async function writeDoc(ref, data) {
+			try {
+				await ref.update(data);
+			} catch (e) {
+				if (e && e.code === 'unavailable') {
+					await sleep(1500 + Math.random() * 1000);
+					await ref.update(data);
+				} else {
+					throw e;
+				}
+			}
+		}
+
+		var MESSAGES = {
+			rate_limited:
+				'Uploads are arriving faster than the server accepts them. Wait a minute, then press Continue.',
+			quota_or_state:
+				'This page has run out of storage for uploads. Tell Claude in the chat and it will make room.',
+			upstream_auth:
+				'Your sign-in needs refreshing. Reload this page and choose the same files; each picks up after its last finished reel.',
+			not_granted:
+				'Uploading was not allowed on this page. Reload it and allow uploads when asked.',
+			unsupported_type:
+				'The server refused a piece of this file. Tell Claude in the chat which file it was.',
+			too_large:
+				"A piece was over the server's 20 MB limit. Tell Claude in the chat.",
+			invalid_request:
+				'The server could not read this file. A text file must be saved as UTF-8; otherwise send it in the chat.',
+			store_unavailable:
+				'The storage service is having trouble right now. Press Continue to send this reel again.',
+			upstream_error:
+				'The server did not accept this reel. Press Continue to send it again.',
+			unavailable:
+				'The upload list could not be updated. Press Continue to try again.',
+			resource_exhausted:
+				'The upload list is busy. Wait a moment, then press Continue.',
+			capability_disabled:
+				'Uploading is switched off in this view. Open the page in claude.ai in a browser.',
+		};
+		// These stop the whole queue until Continue; anything else fails only
+		// the file it happened to, and the queue moves on to the next one.
+		var RETRYABLE = {
+			rate_limited: 1,
+			store_unavailable: 1,
+			upstream_error: 1,
+			unavailable: 1,
+			resource_exhausted: 1,
+			size_mismatch: 1,
+		};
+		var FATAL = {
+			quota_or_state: 1,
+			upstream_auth: 1,
+			not_granted: 1,
+			capability_disabled: 1,
+		};
+
+		// ---- the queue ------------------------------------------------------------
+
+		function addFiles(list) {
+			if (!state.assets || !state.db) return;
+			var added = 0,
+				skipped = [];
+			Array.prototype.forEach.call(list || [], function (file) {
+				if (!file || !file.size) {
+					if (file) skipped.push(file.name + ' is empty');
+					return;
+				}
+				var inQueue = state.queue.some(function (q) {
+					return (
+						q.state !== 'done' &&
+						sameFile(
+							{
+								name: q.file.name,
+								size: q.file.size,
+								lastModified: q.file.lastModified,
+							},
+							file,
+						)
+					);
+				});
+				if (inQueue) {
+					skipped.push(file.name + ' is already in the queue');
+					return;
+				}
+				var got = state.uploads.some(function (u) {
+					return u.data.status === 'complete' && sameFile(u.data, file);
+				});
+				if (got) {
+					skipped.push(file.name + ' was already received');
+					return;
+				}
+				var kind = kindOf(file);
+				var q = {
+					qid: nextQid++,
+					file: file,
+					kind: kind,
+					note: '',
+					meta: {},
+					state: 'waiting',
+					message: '',
+					chunks: [],
+					sentBytes: 0,
+					sentMs: 0,
+				};
+				if (kind === 'text' && file.size > CHUNK) {
+					q.state = 'failed';
+					q.message =
+						'A text file over 19 MB cannot go in one piece. Send it in the chat, or zip it with the videos.';
+				}
+				state.queue.push(q);
+				added++;
+				readMeta(file, kind).then(function (m) {
+					q.meta = m || {};
+					render();
+				});
+			});
+			el('drop-msg').hidden = !skipped.length;
+			el('drop-msg').textContent = skipped.length
+				? 'Skipped: ' + skipped.join('; ') + '.'
+				: '';
+			render();
+			if (added) pump();
+		}
+
+		function nextWaiting() {
+			return state.queue.find(function (q) {
+				return q.state === 'waiting' || q.state === 'stopped';
+			});
+		}
+
+		async function pump() {
+			if (state.busy || state.held) return;
+			var q = nextWaiting();
+			if (!q) {
+				finish();
+				return;
+			}
+			state.busy = true;
+			el('continue').hidden = true;
+			el('pause').disabled = false;
+			if (!state.lock) {
+				try {
+					if (navigator.wakeLock)
+						state.lock = await navigator.wakeLock.request('screen');
+				} catch (e) {}
+			}
+			state.current = q;
+			q.state = 'sending';
+			q.message = '';
+			render();
+			var outcome = await sendOne(q);
+			state.busy = false;
+			if (outcome === 'done') {
+				q.state = 'done';
+				state.current = null;
+			} else if (outcome === 'failed') {
+				state.current = null;
+			}
+			renderList();
+			refreshUsage();
+			render();
+			if (outcome === 'done' || outcome === 'failed') pump();
+		}
+
+		function finish() {
+			state.current = null;
+			if (state.lock && state.lock.release)
+				state.lock.release().catch(function () {});
+			state.lock = null;
+			var failed = state.queue.filter(function (q) {
+				return q.state === 'failed';
+			});
+			render();
+			if (!state.queue.length) return;
+			if (failed.length)
+				setStatus(
+					failed.length +
+						(failed.length === 1 ? ' file was' : ' files were') +
+						' not sent; each says why below. Everything else is received.',
+					'warn',
+				);
+			else
+				setStatus(
+					'Everything is received. Go back to the chat and tell Claude the files are up.',
+					'ok',
+				);
+		}
+
+		// Returns 'done', 'failed' (this file only; the queue goes on) or
+		// 'stopped' (the queue waits for Continue).
+		async function sendOne(q) {
+			var file = q.file;
+			setStatus('Reading ' + file.name + '…');
+			try {
+				if (!q.ends) {
+					var prior = state.uploads.find(function (u) {
+						return u.data.status !== 'complete' && sameFile(u.data, file);
+					});
+					if (prior && Array.isArray(prior.data.ends)) {
+						q.ends = prior.data.ends.slice();
+						q.chunks = Array.isArray(prior.data.chunks)
+							? prior.data.chunks.slice()
+							: [];
+						q.docId = prior.id;
+						if (!q.note && prior.data.note) q.note = String(prior.data.note);
+					} else {
+						if (q.kind !== 'text' && (await startsWithMarkup(file, 0))) {
+							q.state = 'failed';
+							q.message =
+								'This file starts like a web page, not a recording, and the server refuses it. Send it in the chat.';
+							return 'failed';
+						}
+						q.ends = q.kind === 'text' ? [file.size] : await planEnds(file);
+					}
+				}
+
+				await refreshUsage();
+				var remaining =
+					file.size - (q.chunks.length ? q.chunks[q.chunks.length - 1].end : 0);
+				var u = state.usage;
+				if (u && u.maxBytes && u.maxBytes - u.bytes < remaining) {
+					q.state = 'failed';
+					q.message =
+						'Needs ' +
+						fmtSize(remaining) +
+						' and the page has ' +
+						fmtSize(Math.max(0, u.maxBytes - u.bytes)) +
+						' free. Tell Claude in the chat.';
+					return 'failed';
+				}
+				if (
+					u &&
+					u.maxFiles &&
+					u.maxFiles - u.files < q.ends.length - q.chunks.length
+				) {
+					q.state = 'failed';
+					q.message =
+						'Needs ' +
+						(q.ends.length - q.chunks.length) +
+						' reels and the page has room for ' +
+						Math.max(0, u.maxFiles - u.files) +
+						'. Tell Claude in the chat.';
+					return 'failed';
+				}
+
+				if (!q.ref) {
+					if (q.docId) {
+						q.ref = state.db.collection('uploads').doc(q.docId);
+						if (q.note) await writeDoc(q.ref, {note: q.note});
+					} else {
+						q.ref = state.db.collection('uploads').doc();
+						q.docId = q.ref.id;
+						await q.ref.set({
+							name: file.name,
+							size: file.size,
+							type: file.type || '',
+							kind: q.kind,
+							lastModified: file.lastModified,
+							pieceType: pieceType(file, q.kind),
+							chunkSize: CHUNK,
+							ends: q.ends,
+							chunks: [],
+							uploadedBytes: 0,
+							status: 'uploading',
+							note: q.note || '',
+							batch: state.batch,
+							duration: isFinite(q.meta.duration) ? q.meta.duration : null,
+							width: q.meta.width || null,
+							height: q.meta.height || null,
+							startedAt: new Date().toISOString(),
+						});
+					}
+				}
+			} catch (e) {
+				return failOrStop(q, e, -1);
+			}
+
+			showCurrent(q);
+			renderReels();
+			if (q.chunks.length)
+				setStatus(
+					'Continuing ' +
+						file.name +
+						' after reel ' +
+						q.chunks.length +
+						' of ' +
+						q.ends.length +
+						'.',
+				);
+			var type = pieceType(file, q.kind);
+			var i = q.chunks.length;
+			try {
+				for (; i < q.ends.length; i++) {
+					if (state.held) {
+						q.state = 'stopped';
+						setStatus(
+							'Paused after reel ' +
+								i +
+								' of ' +
+								q.ends.length +
+								' of ' +
+								file.name +
+								'. Press Continue to go on.',
+							'warn',
+						);
+						el('continue').hidden = false;
+						return 'stopped';
+					}
+					var start = i ? q.ends[i - 1] : 0,
+						end = q.ends[i];
+					markReel(i, 'active');
+					setStatus(
+						'Sending ' +
+							file.name +
+							(q.ends.length > 1
+								? ', reel ' + (i + 1) + ' of ' + q.ends.length
+								: '') +
+							'…',
+					);
+					renderProgress();
+					var blob = file.slice(start, end);
+					var sha = null;
+					try {
+						if (window.crypto && crypto.subtle)
+							sha = hex(
+								await crypto.subtle.digest('SHA-256', await blob.arrayBuffer()),
+							);
+					} catch (e) {}
+					var t0 = performance.now();
+					var res = await uploadPiece(blob, type);
+					if (res.sizeBytes !== end - start) {
+						throw {
+							code: 'size_mismatch',
+							message:
+								'Reel ' +
+								(i + 1) +
+								' arrived as ' +
+								res.sizeBytes +
+								' bytes instead of ' +
+								(end - start) +
+								'.',
+						};
+					}
+					q.sentBytes += end - start;
+					q.sentMs += performance.now() - t0;
+					q.chunks.push({
+						i: i,
+						id: res.id,
+						start: start,
+						end: end,
+						size: res.sizeBytes,
+						sha256: sha,
+					});
+					await writeDoc(q.ref, {
+						chunks: q.chunks.slice(),
+						uploadedBytes: end,
+						updatedAt: new Date().toISOString(),
+					});
+					markReel(i, 'done');
+					renderSpace();
+				}
+				await writeDoc(q.ref, {
+					status: 'complete',
+					completedAt: new Date().toISOString(),
+				});
+				q.state = 'done';
+				renderProgress();
+				var left = state.queue.filter(function (x) {
+					return x.state === 'waiting' || x.state === 'stopped';
+				}).length;
+				setStatus(
+					left
+						? file.name + ' received. ' + left + ' more to go.'
+						: 'Everything is received. Go back to the chat and tell Claude the files are up.',
+					'ok',
+				);
+				return 'done';
+			} catch (e) {
+				return failOrStop(q, e, i);
+			}
+		}
+
+		function failOrStop(q, e, reel) {
+			if (reel >= 0) markReel(reel, 'failed');
+			var code = e && e.code;
+			var text =
+				MESSAGES[code] ||
+				(e && e.message
+					? String(e.message)
+					: 'The connection dropped. Press Continue to try again.');
+			if (!code || RETRYABLE[code] || FATAL[code] || !MESSAGES[code]) {
+				q.state = 'stopped';
+				setStatus(
+					q.file.name +
+						': ' +
+						text +
+						(FATAL[code] || /Continue/.test(text)
+							? ''
+							: ' Press Continue to try again.'),
+					'err',
+				);
+				el('continue').hidden = !!FATAL[code];
+				return 'stopped';
+			}
+			q.state = 'failed';
+			q.message = text;
+			setStatus(q.file.name + ' was not sent. The next file is going.', 'warn');
+			return 'failed';
+		}
+
+		// ---- wiring -------------------------------------------------------------------
+
+		var drop = el('drop');
+		['dragenter', 'dragover'].forEach(function (t) {
+			drop.addEventListener(t, function (e) {
+				e.preventDefault();
+				drop.classList.add('over');
+			});
+		});
+		['dragleave', 'drop'].forEach(function (t) {
+			drop.addEventListener(t, function (e) {
+				e.preventDefault();
+				drop.classList.remove('over');
+			});
+		});
+		drop.addEventListener('drop', function (e) {
+			addFiles(e.dataTransfer && e.dataTransfer.files);
+		});
+		document.addEventListener('dragover', function (e) {
+			e.preventDefault();
+		});
+		document.addEventListener('drop', function (e) {
+			e.preventDefault();
+		});
+		el('file').addEventListener('change', function (e) {
+			var files = Array.prototype.slice.call(e.target.files || []);
+			e.target.value = '';
+			addFiles(files);
+		});
+		el('job-note').addEventListener('input', function (e) {
+			if (state.current) state.current.note = e.target.value;
+		});
+		el('job-note').addEventListener('change', function (e) {
+			var q = state.current;
+			if (q && q.ref)
+				writeDoc(q.ref, {note: e.target.value}).catch(function () {});
+		});
+		el('continue').addEventListener('click', function () {
+			el('continue').hidden = true;
+			state.held = false;
+			pump();
+		});
+		el('pause').addEventListener('click', function () {
+			state.held = true;
+			el('pause').disabled = true;
+			setStatus('Pausing once this reel lands…', 'warn');
+		});
+
+		function setLocked(locked) {
+			drop.classList.toggle('locked', locked);
+			el('file').disabled = locked;
+			el('pick').classList.toggle('disabled', locked);
+		}
+		function showUnavailable(text) {
+			setLocked(true);
+			el('space').textContent = '';
+			el('drop-title').textContent = 'Uploads are not available here';
+			document.querySelector('.drop .hint').textContent = text;
+		}
+
+		setLocked(true);
+		(async function init() {
+			var C = window.claude;
+			if (!C || typeof C.use !== 'function') {
+				showUnavailable(
+					'Open this page from its claude.ai link, signed in, to upload.',
+				);
+				return;
+			}
+			var got = await Promise.all([
+				C.use('assets').catch(function () {
+					return null;
+				}),
+				C.use('db').catch(function () {
+					return null;
+				}),
+			]);
+			state.assets = got[0];
+			state.db = got[1];
+			if (!state.db) {
+				showUnavailable(
+					"This view can't reach the upload list. Open the page from its claude.ai link in a browser.",
+				);
+				return;
+			}
+			state.db.collection('uploads').onSnapshot(
+				function (snap) {
+					state.uploads = snap.docs
+						.filter(function (d) {
+							return d.exists;
+						})
+						.map(function (d) {
+							return {id: d.id, data: d.data() || {}};
+						});
+					renderList();
+				},
+				function () {
+					el('empty').textContent =
+						'The upload list stopped updating. Reload the page to see it again.';
+					el('empty').hidden = false;
+				},
+			);
+			if (!state.assets) {
+				showUnavailable(
+					'Only the owner of this page, or someone they made an editor, can upload to it.',
+				);
+				return;
+			}
+			setLocked(false);
+			refreshUsage();
+		})();
+	})();
+</script>

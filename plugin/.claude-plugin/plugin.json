@@ -1,0 +1,11 @@
+{
+  "name": "video-director",
+  "displayName": "Video Director",
+  "version": "0.1.0",
+  "description": "A friendly director and its skills for making and editing videos with public tools such as Remotion and ffmpeg.",
+  "author": { "name": "vivmagarwal" },
+  "repository": "https://github.com/vivmagarwal/video-director",
+  "homepage": "https://github.com/vivmagarwal/video-director",
+  "license": "MIT",
+  "keywords": ["video", "remotion", "ffmpeg", "narration", "editing"]
+}

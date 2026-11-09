@@ -1,0 +1,252 @@
+<title>Pick Your Effects</title>
+<style>
+	:root {
+		--ground: #ffffff;
+		--surface: #f6f7f8;
+		--line: #dfe2e6;
+		--ink: #15181c;
+		--body: #2b3036;
+		--muted: #646c75;
+		--accent: #0b6e69;
+		--accent-ink: #ffffff;
+		--bad: #b42318;
+		--sans: ui-sans-serif, system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
+	}
+	@media (prefers-color-scheme: dark) {
+		:root:not([data-theme='light']) {
+			color-scheme: dark;
+			--ground: #0d1014;
+			--surface: #161a20;
+			--line: #2a313a;
+			--ink: #f2f4f6;
+			--body: #d3d7dc;
+			--muted: #99a2ac;
+			--accent: #3dd6c6;
+			--accent-ink: #04211f;
+			--bad: #f58a80;
+		}
+	}
+	:root[data-theme='dark'] {
+		color-scheme: dark;
+		--ground: #0d1014;
+		--surface: #161a20;
+		--line: #2a313a;
+		--ink: #f2f4f6;
+		--body: #d3d7dc;
+		--muted: #99a2ac;
+		--accent: #3dd6c6;
+		--accent-ink: #04211f;
+		--bad: #f58a80;
+	}
+	* { box-sizing: border-box; }
+	body { margin: 0; background: var(--ground); color: var(--body); font: 16px/1.55 var(--sans); }
+	.wrap { max-width: 1040px; margin: 0 auto; padding: 32px 16px 64px; }
+	h1 { color: var(--ink); font-size: clamp(28px, 6vw, 38px); line-height: 1.15; margin: 0 0 8px; }
+	h2 { color: var(--ink); font-size: 18px; margin: 0 0 4px; }
+	.intro { margin: 0 0 24px; max-width: 64ch; }
+	.grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(min(300px, 100%), 1fr)); gap: 20px; }
+	.card { border: 1px solid var(--line); border-radius: 10px; background: var(--surface); overflow: hidden; display: flex; flex-direction: column; }
+	.card.love { border-color: var(--accent); box-shadow: 0 0 0 1px var(--accent); }
+	.card video { width: 100%; display: block; background: #000; aspect-ratio: 16 / 9; }
+	.card-body { padding: 12px 14px 14px; display: flex; flex-direction: column; gap: 8px; flex: 1; }
+	.why { margin: 0; font-size: 15px; }
+	.src { font-size: 13px; color: var(--muted); margin: 0; overflow-wrap: anywhere; }
+	.src a, .more a { color: var(--accent); }
+	.verdicts { display: flex; flex-wrap: wrap; gap: 8px; margin-top: auto; }
+	.verdicts button {
+		appearance: none;
+		border: 1px solid var(--line);
+		background: var(--ground);
+		color: var(--ink);
+		font: 600 14px/1 var(--sans);
+		padding: 9px 12px;
+		border-radius: 6px;
+		cursor: pointer;
+	}
+	.verdicts button[aria-pressed='true'] { background: var(--accent); border-color: var(--accent); color: var(--accent-ink); }
+	.verdicts button:focus-visible, textarea:focus-visible { outline: 3px solid var(--accent); outline-offset: 2px; }
+	label { font-size: 14px; color: var(--muted); }
+	textarea { width: 100%; min-height: 56px; font: 15px/1.4 var(--sans); padding: 8px; border: 1px solid var(--line); border-radius: 6px; background: var(--ground); color: var(--ink); }
+	.foot { margin-top: 32px; }
+	.status { color: var(--muted); font-size: 14px; min-height: 1.5em; }
+	.status.err { color: var(--bad); }
+	.more { margin-top: 24px; font-size: 15px; }
+	[hidden] { display: none !important; }
+</style>
+
+<main class="wrap">
+	<h1 id="title"></h1>
+	<p class="intro" id="intro"></p>
+	<div class="grid" id="grid"></div>
+	<section class="foot">
+		<h2>Anything else?</h2>
+		<label for="general">A style you love, a video you admire, a colour, a link, or anything you would like Claude to try.</label>
+		<textarea id="general"></textarea>
+	</section>
+	<p class="status" id="status" aria-live="polite"></p>
+	<p class="more" id="more" hidden></p>
+</main>
+
+<script type="application/json" id="picker-data">
+	{
+		"title": "Pick your effects",
+		"intro": "Press play on each one. Tell Claude what you think. Nothing here is final, and you can ask for something completely different.",
+		"choices": [],
+		"moreLinks": []
+	}
+</script>
+
+<script>
+	(function () {
+		'use strict';
+		var D = JSON.parse(document.getElementById('picker-data').textContent);
+		var el = function (id) { return document.getElementById(id); };
+		var make = function (tag, cls, text) {
+			var n = document.createElement(tag);
+			if (cls) n.className = cls;
+			if (text !== undefined) n.textContent = text;
+			return n;
+		};
+		var VERDICTS = [['love', 'Love it'], ['maybe', 'Maybe'], ['no', 'Not for me']];
+		var db = null;
+		var cards = {};
+
+		el('title').textContent = D.title;
+		el('intro').textContent = D.intro;
+
+		function status(text, bad) {
+			el('status').textContent = text;
+			el('status').className = bad ? 'status err' : 'status';
+		}
+
+		async function save(id, data) {
+			if (!db) {
+				status('Your choice is on this page only. Tell Claude in the chat what you picked.', true);
+				return;
+			}
+			try {
+				await db.collection('picks').doc(id).set(Object.assign({at: new Date().toISOString()}, data));
+				status('Saved. Tell Claude in the chat when you are done.');
+			} catch (e) {
+				status('That did not save. Tell Claude in the chat what you picked.', true);
+			}
+		}
+
+		(D.choices || []).forEach(function (c) {
+			var card = make('article', 'card');
+			if (c.url) {
+				var v = make('video');
+				v.src = c.url;
+				v.controls = true;
+				v.loop = true;
+				v.muted = true;
+				v.autoplay = true;
+				v.playsInline = true;
+				v.preload = 'auto';
+				card.appendChild(v);
+			}
+			var body = make('div', 'card-body');
+			body.appendChild(make('h2', '', c.name));
+			if (c.why) body.appendChild(make('p', 'why', c.why));
+			if (c.source) {
+				var p = make('p', 'src', 'From: ');
+				if (c.sourceUrl) {
+					var a = make('a', '', c.source);
+					a.href = c.sourceUrl;
+					a.target = '_blank';
+					a.rel = 'noopener';
+					p.appendChild(a);
+				} else {
+					p.appendChild(document.createTextNode(c.source));
+				}
+				body.appendChild(p);
+			}
+			var row = make('div', 'verdicts');
+			var buttons = {};
+			(c.letters ? c.letters.map(function (l) { return [l, l]; }) : VERDICTS).forEach(function (pair) {
+				var b = make('button', '', pair[1]);
+				b.type = 'button';
+				b.setAttribute('aria-pressed', 'false');
+				b.addEventListener('click', function () {
+					apply(c.id, pair[0]);
+					save(c.id, {verdict: pair[0], note: note.value, name: c.name});
+				});
+				buttons[pair[0]] = b;
+				row.appendChild(b);
+			});
+			body.appendChild(row);
+			var lab = make('label', '', 'A note (optional)');
+			var note = make('textarea');
+			note.id = 'note-' + c.id;
+			lab.htmlFor = note.id;
+			note.addEventListener('change', function () {
+				save(c.id, {verdict: current[c.id] || '', note: note.value, name: c.name});
+			});
+			body.appendChild(lab);
+			body.appendChild(note);
+			card.appendChild(body);
+			el('grid').appendChild(card);
+			cards[c.id] = {card: card, buttons: buttons, note: note, letters: !!c.letters};
+		});
+
+		var current = {};
+		function apply(id, verdict) {
+			current[id] = verdict;
+			var c = cards[id];
+			if (!c) return;
+			Object.keys(c.buttons).forEach(function (k) {
+				c.buttons[k].setAttribute('aria-pressed', String(k === verdict));
+			});
+			c.card.classList.toggle('love', verdict === 'love' || (c.letters && verdict in c.buttons));
+		}
+
+		if (D.moreLinks && D.moreLinks.length) {
+			var more = el('more');
+			more.hidden = false;
+			more.appendChild(document.createTextNode('Want to browse more yourself? '));
+			D.moreLinks.forEach(function (l, i) {
+				if (i) more.appendChild(document.createTextNode(' · '));
+				var a = make('a', '', l.label);
+				a.href = l.url;
+				a.target = '_blank';
+				a.rel = 'noopener';
+				more.appendChild(a);
+			});
+		}
+
+		el('general').addEventListener('change', function () {
+			save('_general', {note: el('general').value});
+		});
+
+		(async function () {
+			var C = window.claude;
+			if (!C || typeof C.use !== 'function') {
+				status('Open this page from its claude.ai link to save your choices. You can still watch and tell Claude in the chat.');
+				return;
+			}
+			db = await C.use('db').catch(function () { return null; });
+			if (!db) {
+				status('Saving is not available in this view. Watch the clips and tell Claude in the chat what you picked.');
+				return;
+			}
+			db.collection('picks').onSnapshot(
+				function (snap) {
+					snap.docs.forEach(function (d) {
+						if (!d.exists) return;
+						var data = d.data() || {};
+						if (d.id === '_general') {
+							if (document.activeElement !== el('general')) el('general').value = data.note || '';
+							return;
+						}
+						if (data.verdict) apply(d.id, data.verdict);
+						var c = cards[d.id];
+						if (c && document.activeElement !== c.note) c.note.value = data.note || '';
+					});
+				},
+				function () {
+					status('Saved choices could not load. Reload the page to see them.', true);
+				},
+			);
+		})();
+	})();
+</script>

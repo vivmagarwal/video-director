@@ -1,0 +1,305 @@
+<title>Your Finished Video</title>
+<style>
+	:root {
+		--ground: #ffffff;
+		--surface: #f6f7f8;
+		--line: #dfe2e6;
+		--ink: #15181c;
+		--body: #2b3036;
+		--muted: #646c75;
+		--accent: #0b6e69;
+		--accent-ink: #ffffff;
+		--bad: #b42318;
+		--sans: ui-sans-serif, system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
+		--mono: ui-monospace, SFMono-Regular, Menlo, monospace;
+	}
+	@media (prefers-color-scheme: dark) {
+		:root:not([data-theme='light']) {
+			color-scheme: dark;
+			--ground: #0d1014;
+			--surface: #161a20;
+			--line: #2a313a;
+			--ink: #f2f4f6;
+			--body: #d3d7dc;
+			--muted: #99a2ac;
+			--accent: #3dd6c6;
+			--accent-ink: #04211f;
+			--bad: #f58a80;
+		}
+	}
+	:root[data-theme='dark'] {
+		color-scheme: dark;
+		--ground: #0d1014;
+		--surface: #161a20;
+		--line: #2a313a;
+		--ink: #f2f4f6;
+		--body: #d3d7dc;
+		--muted: #99a2ac;
+		--accent: #3dd6c6;
+		--accent-ink: #04211f;
+		--bad: #f58a80;
+	}
+	* { box-sizing: border-box; }
+	body {
+		margin: 0;
+		background: var(--ground);
+		color: var(--body);
+		font: 16px/1.55 var(--sans);
+	}
+	.wrap { max-width: 880px; margin: 0 auto; padding: 32px 16px 64px; }
+	h1 { color: var(--ink); font-size: clamp(28px, 6vw, 40px); line-height: 1.15; margin: 0 0 8px; }
+	h2 { color: var(--ink); font-size: 20px; margin: 0 0 10px; }
+	header p { margin: 0 0 6px; }
+	.meta { color: var(--muted); font: 13px/1.5 var(--mono); }
+	section { margin-top: 32px; }
+	.screen {
+		position: relative;
+		background: #000;
+		aspect-ratio: 16 / 9;
+		border-radius: 8px;
+		overflow: hidden;
+		display: flex;
+		align-items: center;
+		justify-content: center;
+	}
+	.screen.tall { aspect-ratio: 9 / 16; max-height: 70vh; margin: 0 auto; }
+	.screen.square { aspect-ratio: 4 / 5; max-height: 70vh; margin: 0 auto; }
+	.screen video { width: 100%; height: 100%; display: block; }
+	.veil { color: #d9dde2; padding: 16px; text-align: center; font-size: 15px; }
+	.bar { height: 6px; background: var(--line); border-radius: 3px; margin-top: 10px; overflow: hidden; }
+	.bar span { display: block; height: 100%; width: 0; background: var(--accent); transition: width 0.2s; }
+	.row { display: flex; flex-wrap: wrap; align-items: center; gap: 12px; margin-top: 12px; }
+	.btn {
+		appearance: none;
+		border: 1px solid var(--accent);
+		background: var(--accent);
+		color: var(--accent-ink);
+		font: 600 15px/1 var(--sans);
+		padding: 11px 16px;
+		border-radius: 6px;
+		cursor: pointer;
+	}
+	.btn.quiet { background: transparent; color: var(--accent); }
+	.btn:disabled { opacity: 0.55; cursor: default; }
+	.btn:focus-visible { outline: 3px solid var(--accent); outline-offset: 2px; }
+	.note { color: var(--muted); font-size: 14px; }
+	.note.err { color: var(--bad); }
+	ol, ul { margin: 0; padding-left: 20px; }
+	li { margin: 4px 0; }
+	.t { font: 13px var(--mono); color: var(--muted); margin-right: 8px; }
+	pre {
+		white-space: pre-wrap;
+		overflow-wrap: anywhere;
+		background: var(--surface);
+		border: 1px solid var(--line);
+		border-radius: 6px;
+		padding: 12px;
+		font: 14px/1.5 var(--sans);
+		margin: 0;
+	}
+	[hidden] { display: none !important; }
+</style>
+
+<main class="wrap">
+	<header>
+		<h1 id="title"></h1>
+		<p id="intro"></p>
+		<p class="meta" id="meta"></p>
+	</header>
+	<div id="videos"></div>
+	<section id="chapters-box" hidden>
+		<h2>Chapters</h2>
+		<ol id="chapters"></ol>
+	</section>
+	<section id="desc-box" hidden>
+		<h2>Description</h2>
+		<pre id="desc"></pre>
+		<div class="row">
+			<button class="btn quiet" id="copy" type="button">Copy description</button>
+			<span class="note" id="copy-note"></span>
+		</div>
+	</section>
+	<section id="changes-box" hidden>
+		<h2>What was done</h2>
+		<ul id="changes"></ul>
+	</section>
+	<section id="checks-box" hidden>
+		<h2>Please check these</h2>
+		<ul id="checks"></ul>
+	</section>
+</main>
+
+<script type="application/json" id="video-data">
+	{
+		"title": "Your finished video",
+		"intro": "",
+		"meta": "",
+		"videos": [],
+		"chapters": [],
+		"description": "",
+		"changes": [],
+		"checks": []
+	}
+</script>
+
+<script>
+	(function () {
+		'use strict';
+		var D = JSON.parse(document.getElementById('video-data').textContent);
+		var el = function (id) { return document.getElementById(id); };
+		var mb = function (b) { return (b / 1e6).toFixed(b < 1e8 ? 1 : 0) + ' MB'; };
+		var make = function (tag, cls, text) {
+			var n = document.createElement(tag);
+			if (cls) n.className = cls;
+			if (text !== undefined) n.textContent = text;
+			return n;
+		};
+		var pieceUrl = function (p) { return p.url || '/_blob/' + p.id; };
+		var downloads = null;
+		var saveButtons = [];
+
+		el('title').textContent = D.title;
+		document.title = D.title;
+		el('intro').textContent = D.intro || '';
+		el('meta').textContent = D.meta || '';
+
+		async function sha256(buf) {
+			if (!(window.crypto && crypto.subtle)) return null;
+			var h = await crypto.subtle.digest('SHA-256', buf);
+			return Array.prototype.map
+				.call(new Uint8Array(h), function (b) { return b.toString(16).padStart(2, '0'); })
+				.join('');
+		}
+
+		async function fetchAll(video, onProgress) {
+			var parts = [];
+			var got = 0;
+			for (var i = 0; i < video.pieces.length; i++) {
+				var p = video.pieces[i];
+				onProgress(i, got);
+				var res = await fetch(pieceUrl(p));
+				if (!res.ok) throw new Error('Piece ' + (i + 1) + ' did not load (' + res.status + ').');
+				var buf = await res.arrayBuffer();
+				if (p.size && buf.byteLength !== p.size) throw new Error('Piece ' + (i + 1) + ' arrived at the wrong size.');
+				var h = await sha256(buf);
+				if (h && p.sha256 && h !== p.sha256) throw new Error('Piece ' + (i + 1) + ' arrived damaged.');
+				parts.push(buf);
+				got += buf.byteLength;
+			}
+			onProgress(video.pieces.length, got);
+			return new Blob(parts, {type: video.type || 'video/mp4'});
+		}
+
+		function addVideo(video) {
+			var section = make('section');
+			section.appendChild(make('h2', '', video.label || 'Your video'));
+			var screen = make('div', 'screen' + (video.shape === 'tall' ? ' tall' : video.shape === 'square' ? ' square' : ''));
+			var player = make('video');
+			player.controls = true;
+			player.playsInline = true;
+			player.hidden = true;
+			var veil = make('div', 'veil', 'Press "Get the video" to bring it here. It arrives in pieces, gets checked, and then plays and saves as one file.');
+			screen.appendChild(player);
+			screen.appendChild(veil);
+			section.appendChild(screen);
+			var bar = make('div', 'bar');
+			var fill = make('span');
+			bar.appendChild(fill);
+			bar.hidden = true;
+			section.appendChild(bar);
+			var row = make('div', 'row');
+			var load = make('button', 'btn', 'Get the video');
+			load.type = 'button';
+			var save = make('button', 'btn quiet', 'Save to my device');
+			save.type = 'button';
+			save.hidden = true;
+			var note = make('span', 'note', video.size ? mb(video.size) : '');
+			row.appendChild(load);
+			row.appendChild(save);
+			row.appendChild(note);
+			section.appendChild(row);
+			el('videos').appendChild(section);
+
+			var blob = null;
+			var entry = {button: save, ready: function () { return !!blob; }};
+			saveButtons.push(entry);
+
+			load.addEventListener('click', async function () {
+				load.disabled = true;
+				bar.hidden = false;
+				note.className = 'note';
+				try {
+					blob = await fetchAll(video, function (i, got) {
+						note.textContent = 'Piece ' + Math.min(i + 1, video.pieces.length) + ' of ' + video.pieces.length + ' · ' + mb(got) + (video.size ? ' of ' + mb(video.size) : '');
+						if (video.size) fill.style.width = ((100 * got) / video.size).toFixed(1) + '%';
+					});
+					fill.style.width = '100%';
+					note.textContent = 'All pieces arrived and were checked · ' + mb(blob.size);
+					player.onerror = function () {
+						veil.hidden = false;
+						veil.textContent = "This view can't play it here. Save it and play it on your device.";
+						player.hidden = true;
+					};
+					player.src = URL.createObjectURL(blob);
+					player.hidden = false;
+					veil.hidden = true;
+					load.hidden = true;
+					if (downloads) save.hidden = false;
+					else note.textContent += '. To save it, open this page in a browser while signed in.';
+				} catch (e) {
+					note.className = 'note err';
+					note.textContent = (e && e.message ? e.message : 'Loading stopped.') + ' Press the button to try again.';
+					load.disabled = false;
+				}
+			});
+
+			save.addEventListener('click', async function () {
+				if (!blob || !downloads) return;
+				try {
+					await downloads.save({filename: video.filename || 'video.mp4', data: blob});
+					note.className = 'note';
+					note.textContent = 'Saved.';
+				} catch (e) {
+					var c = e && e.code;
+					note.textContent = c === 'declined' ? 'Not saved.' : c === 'too_large' ? 'Too large to save in this app. Open this page in a computer browser.' : "Saving isn't available here.";
+				}
+			});
+		}
+		(D.videos || []).forEach(addVideo);
+
+		if (D.chapters && D.chapters.length) {
+			el('chapters-box').hidden = false;
+			D.chapters.forEach(function (c) {
+				var li = make('li');
+				li.appendChild(make('span', 't', c.t));
+				li.appendChild(document.createTextNode(c.title));
+				el('chapters').appendChild(li);
+			});
+		}
+		if (D.description) {
+			el('desc-box').hidden = false;
+			el('desc').textContent = D.description;
+			el('copy').addEventListener('click', function () {
+				navigator.clipboard.writeText(D.description).then(
+					function () { el('copy-note').textContent = 'Copied.'; },
+					function () { el('copy-note').textContent = 'Copy did not work here. Select the text and copy it by hand.'; },
+				);
+			});
+		}
+		function fillList(box, target, items) {
+			if (!items || !items.length) return;
+			el(box).hidden = false;
+			items.forEach(function (text) { el(target).appendChild(make('li', '', text)); });
+		}
+		fillList('changes-box', 'changes', D.changes);
+		fillList('checks-box', 'checks', D.checks);
+
+		(async function () {
+			var C = window.claude;
+			if (C && typeof C.use === 'function') {
+				downloads = await C.use('downloads').catch(function () { return null; });
+				if (downloads) saveButtons.forEach(function (s) { if (s.ready()) s.button.hidden = false; });
+			}
+		})();
+	})();
+</script>
