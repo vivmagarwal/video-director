@@ -463,6 +463,8 @@ Keep each clip to a few seconds and under 20 MiB, so that it fits as one stored 
 
 ### 7. Put them on the picking page
 
+**If you are also showing a plan,** do not make a second page. Hand these clips to the plan-and-choose skill's page as one numbered section. The page below is for when effects are the only question. Images are fine in place of clips, when the motion is not the point.
+
 `effect-picker.html`, which the copy step puts in your folder:
 
 ```html

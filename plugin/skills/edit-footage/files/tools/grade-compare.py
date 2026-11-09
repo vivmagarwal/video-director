@@ -2,6 +2,9 @@
 """Make one short clip that shows colour grades side by side, for the user to choose.
 
 usage: python3 tools/grade-compare.py <video> <start second> [--seconds=6] [--out=out/grades.mp4]
+       python3 tools/grade-compare.py <video> <second> --stills=out/options
+
+With --stills it saves one picture per grade instead, as A.jpg, B.jpg and so on.
 
 The clip has four panels: A, the original, top left, then B top right, C bottom
 left and D bottom right. It prints each letter's ffmpeg filter, so the one the user
@@ -30,6 +33,15 @@ for a in sys.argv[1:]:
         seconds = a.split("=", 1)[1]
     if a.startswith("--out="):
         out = a.split("=", 1)[1]
+stills = next((a.split("=", 1)[1] for a in sys.argv[1:] if a.startswith("--stills=")), None)
+if stills:
+    pathlib.Path(stills).mkdir(parents=True, exist_ok=True)
+    for letter, name, grade in GRADES:
+        r = subprocess.run(["ffmpeg", "-v", "error", "-y", "-nostdin", "-ss", args[1], "-i", args[0], "-frames:v", "1", "-vf", f"scale=960:-2,{grade}", "-q:v", "3", f"{stills}/{letter}.jpg"], capture_output=True, text=True)
+        if r.returncode:
+            sys.exit("ffmpeg could not make the picture: " + r.stderr[-400:])
+        print(f"{stills}/{letter}.jpg ({name}): {grade}")
+    sys.exit(0)
 pathlib.Path(out).parent.mkdir(parents=True, exist_ok=True)
 
 

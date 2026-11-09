@@ -45,7 +45,7 @@ Then run `/video-director:director`.
 | Path | What it is |
 |---|---|
 | `director.md` | The small start file you attach |
-| `plugin/skills/` | The 20 skills. Each folder has a `SKILL.md`, and a `files` folder if it needs scripts or pages. Only the `director` skill depends on the others |
+| `plugin/skills/` | The 21 skills. Each folder has a `SKILL.md`, and a `files` folder if it needs scripts or pages. Only the `director` skill depends on the others |
 | `dist/` | The same skills as one download, which `director.md` fetches |
 
 ## A floor, not a ceiling

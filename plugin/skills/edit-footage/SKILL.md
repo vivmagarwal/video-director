@@ -361,6 +361,8 @@ Before you spend time on a plan, ask one question at a time, each with your reco
 
 ### Step 5. Make a graded working copy
 
+**Make this once, after the user has chosen a colour.** Steps 6 and 7 work from `raw/take.mp4`, so you can do them first, show the options in Step 7b, and come back here. The clock stays the same unless you trim. If you will trim, decide that first, and transcribe the trimmed sound.
+
 One ffmpeg pass does the upscale (with lanczos, a sharp scaling method), the grade, the sharpening and a keyframe every second, and copies the sound untouched. This is the exact command from the 24-minute job, at 25 frames a second:
 
 ```bash
@@ -371,15 +373,15 @@ ffmpeg -i raw/take.mp4 -vf "scale=1280:720:flags=lanczos,eq=contrast=1.10:satura
 ```
 
 - **`-g` and `-keyint_min` must equal the frame rate,** for one keyframe a second. At 30 frames a second write 30. Check the result with the ffprobe line from Step 3.
-- **The grade numbers are one example** that suited one blown-out wall. So let the user choose. This makes one 6-second clip with four labelled panels: the original, then three other grades. It prints each letter's filter, and that filter goes into the command above:
+- **The grade numbers are one example** that suited one blown-out wall. So let the user choose. The first command saves one picture per grade from their own footage, for the options in Step 7b. The second makes one 6-second clip with four labelled panels instead, if motion matters. Each prints every letter's filter, and that filter goes into the command above:
 
   ```bash
   cd /path/to/film
+  python3 tools/grade-compare.py raw/take.mp4 60 --stills=out/options
   python3 tools/grade-compare.py raw/take.mp4 60
-  ffmpeg -v error -y -ss 3 -i out/grades.mp4 -frames:v 1 out/grades.png
   ```
 
-  Open `out/grades.png` with the Read tool and look at it. Then show the user the clip and ask for a letter. If you have the effects-explorer skill, its picking page has a compare card for this. If you have only a chat, send them the still.
+  Open the pictures with the Read tool and look at them before you show them.
 
   These three suited an interview by a blown-out bright window. There, pulling the highlights down (the `1/0.92` end of the curve) mattered more than adding contrast. They are starting points, so change the list at the top of the script to suit your footage.
 
@@ -496,6 +498,14 @@ That took 5 minutes 41 seconds out of 23.6 minutes in 322 cuts, and still sounde
 **Music only where nobody speaks:** the title, chapter cards and end card (`BED = "audio/bed.mp3"` in the plan, the user's own file under `public/`). A short bed looped under a 20-minute talk would be the loudest thing in the film.
 
 **Decide the title, thumbnail and chapters in this same sitting,** before the render. They are one promise, and the teaser is cut to pay it.
+
+### Step 7b. Show real options and the plan, before you build
+
+Stop here, even if nobody asked you to. The user should see real choices from their own footage, and say go to a numbered plan, before any long work. A picture of each option is enough.
+
+Show them colour (Step 5), and anything else that matters for this film, such as the opening line, a caption style or a title card. Then show the plan as numbered lines: the teaser, the cuts with their reasons, the chapters and the quotes. Number everything (`1A`, `1B`, `5.1`, `5.2`), so that they can answer in the chat: "1B, and change 5.2".
+
+If you have the plan-and-choose skill, use its page. If not, send the same numbered options and images in the chat. Then write the final plan as a numbered message, and keep changing it until they say go. Skip this only for a small fix, or if they ask you to just get on with it.
 
 ### Step 8. Build the cut
 
@@ -915,7 +925,7 @@ Ask early, one at a time:
 **Pause for their OK at these points:**
 
 - after you assign roles to several files, with `all.png` and your table
-- after the plan: show the teaser lines, the list of cuts with reasons, the chapters and the quotes
+- after the plan: real options and the numbered plan, as in Step 7b. Build nothing long until they say go
 - after the first sheet of stills, before a long render
 - with the finished film: what changed from the raw take, and what is worth a second look
 
@@ -1210,7 +1220,7 @@ export const Root: React.FC = () => (
 `tools/grade-compare.py`, which the copy step puts in your folder:
 
 ```python
-# In this skill's files folder: files/tools/grade-compare.py (57 lines).
+# In this skill's files folder: files/tools/grade-compare.py (69 lines).
 ```
 
 `tools/find-gap.py`, which the copy step puts in your folder:

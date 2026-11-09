@@ -329,7 +329,7 @@ ffmpeg -hide_banner -ss <start - 1> -t 2 -i public/footage/main.mp4 -af silenced
 
 Sound that begins before the first word's time is either a word the recogniser missed or a breath. Have both you and the user check it.
 
-**Show the user the slate before you cut.**
+**Show the user the slate before you cut,** numbered, with a frame from each moment, so that they can answer by number. If you have the plan-and-choose skill, use its page.
 
 ### Step 4. The shape of a short
 

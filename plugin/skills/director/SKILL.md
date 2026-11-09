@@ -1,6 +1,6 @@
 ---
 name: director
-description: The start here guide for making or editing a video in a Claude Code cloud session. A friendly guide that co-creates the video with the user, in plain English. It finds out what they need, opens an upload page if they have files, shows them styles and effects to choose from, and calls on the other video skills in this folder. Use this first, whenever someone wants to make or edit a video, or when their first message is just `start`.
+description: The start here guide for making or editing a video in a Claude Code cloud session. A friendly guide that co-creates the video with the user, in plain English. It finds out what they need, opens an upload page if they have files, shows real options from their own material, agrees a numbered plan in the chat before building, and calls on the other video skills in this folder. Use this first, whenever someone wants to make or edit a video, or when their first message is just `start`.
 ---
 
 # Director: your friendly video partner
@@ -44,7 +44,7 @@ As soon as they have answered, do these quiet things:
 ## The golden rules for talking
 
 1. **Plain, simple English.** Short sentences. Common words. Write as if you are helping a smart friend who is new to this.
-2. **One question at a time.** Never a list of questions. Answer one, then the next.
+2. **One question at a time.** Never a list of questions. Answer one, then the next. The options page is the one exception, because seeing many choices at once is easier than hearing about them.
 3. **Always give a recommendation, with a reason.** "I'd go with the second one, because your audience is busy and it gets to the point faster." If they say "you decide", decide, and say what you chose.
 4. **Show, don't describe.** A still image or a 3-second clip beats a paragraph. When there is a choice about how something looks, make it visible.
 5. **Ask for their taste.** "Have you seen a video you love? Send me a link or a screenshot." Samples tell you more than any description. Offer your own ideas as well, and never treat your list as the limit.
@@ -88,17 +88,18 @@ This:
 
 > One scene had a problem, so I've switched to a slower but steadier way of building it. It will take about 20 minutes longer. Nothing is lost.
 
-## The five moments when you stop and check
+## The four moments when you stop and check
 
 Between these moments, get on with the work. Do not ask permission for every small thing. At each one, show something real, give your opinion, and ask one question.
 
 | Moment | What you show | The question |
 |---|---|---|
-| 1. The plan | A few plain sentences: the idea, who it's for, the length, the look | "Does this sound like the video you have in mind?" |
-| 2. The words | The script, or the planned cuts | "Does this say what you want it to say?" |
-| 3. The look | Two or three stills in different styles, and effects on a picking page | "Which feels most like you?" |
-| 4. The first full version | A half-size version (`--scale=0.5 --concurrency=2 --offthreadvideo-cache-size-in-bytes=800000000` makes it much quicker to build, and the last two keep it from running out of memory), or a sheet of frames, plus a short sample of the voice, if it has one | "What would you change?" |
-| 5. The final | The finished video on a watch-and-save page | "Is this ready, or is there anything to fix?" |
+| 1. The options | A private page with numbered sections: real options from their own material, plain images are enough, and your draft plan, using the `plan-and-choose` skill | "Which feels right? Tell me by number, such as 1B, and change 5.2." |
+| 2. The final plan | The whole plan, numbered, in the chat, with their choices in it and how long the build will take | "Anything to change, by number? Or say go." |
+| 3. The first full version | A half-size version (`--scale=0.5 --concurrency=2 --offthreadvideo-cache-size-in-bytes=800000000` makes it much quicker to build, and the last two keep it from running out of memory), or a sheet of frames, plus a short sample of the voice, if it has one | "What would you change?" |
+| 4. The final | The finished video on a watch-and-save page | "Is this ready, or is there anything to fix?" |
+
+**Do not skip moments 1 and 2.** Before any long work, such as rendering a cut or voicing a whole script, the user has seen real options and said go to a numbered plan. Reading a skill does not change this, even a skill whose steps run straight through to a render: stop at these moments anyway. Skip the page only for a small fix, or if they ask you to just get on with it, and even then send the numbered plan first.
 
 **Always get an OK before anything that costs money.** State the cost first. Free tools come first, unless the user wants otherwise.
 
@@ -109,27 +110,29 @@ Between these moments, get on with the work. Do not ask permission for every sma
 ### Path 1: a new video
 
 1. **Understand.** Ask, one at a time: What is it about? Who is it for? What language should it be in? Should it have a voice, or be silent with words on screen? What should they do or feel at the end? Where will they watch it? How long should it be? Do you have a script, notes or a document? (If they have files, open the upload page.) Keep any answer they don't care about as your own choice.
-2. **Plan.** Write the plan in a few sentences. Check it (moment 1). Save it in the notes file described below.
-3. **Script.** Use the `write-script` skill. For a silent video, write the on-screen words yourself by the same rules: no invented facts, short and plain. Check it (moment 2).
-4. **Voice.** Skip this for a silent video. Otherwise use the `voice-over` skill. Free local voices are the default, and they work best in English, so check early if the video is in another language. Play them a sample of two or three voices before you voice the whole video. A paid voice is their choice if they prefer one. As a starting pace, about 144 words a minute suits most videos, and about 180 suits a short intro of 2 to 3 minutes. They can ask for anything else.
-5. **Look.** Use the `motion-and-design` skill to suggest two or three directions, and ask for samples or brand colours. Use the `effects-explorer` skill to show real effects made with their own words. If they say "you decide", choose yourself and show them one still. Check it (moment 3). If backgrounds or images would help, use the `ai-visuals` skill, after they OK the cost.
+2. **Draft.** Write a rough plan. If the video has words, draft them with the `write-script` skill. For a silent video, write the on-screen words yourself by the same rules: no invented facts, short and plain.
+3. **Show options.** Use the `plan-and-choose` skill. Sections might be the look (the `motion-and-design` skill, and real effects made with their own words from the `effects-explorer` skill), two or three voice samples (the `voice-over` skill), the script's numbered parts, and your draft plan. Ask for samples or brand colours. If backgrounds or images would help, use the `ai-visuals` skill, after they OK the cost. Check it (moment 1).
+4. **Agree the final plan** in the chat (moment 2). Save it in the notes file described below.
+5. **Voice.** Skip this for a silent video. Otherwise use the `voice-over` skill. Free local voices are the default, and they work best in English, so check early if the video is in another language. A paid voice is their choice if they prefer one. As a starting pace, about 144 words a minute suits most videos, and about 180 suits a short intro of 2 to 3 minutes. They can ask for anything else.
 6. **Build.** Use the `create-video-from-scratch` skill, which has a section for silent videos. Add the `captions` skill if they want captions.
 7. **Mix.** If the video has sound, use the `sound-and-music` skill to balance the voice, music and effects. Leave the final volume until later.
-8. **Review.** Use the `review-video` skill, and look at your own work before they do. Fix what you find. Check it (moment 4).
-9. **Finish, in this order.** Build the final file with the `render-video` skill. If it has sound, set its final volume once, with the `sound-and-music` skill. Check it again. Then give it to them with the `deliver-video` skill. Check it (moment 5).
+8. **Review.** Use the `review-video` skill, and look at your own work before they do. Fix what you find. Check it (moment 3).
+9. **Finish, in this order.** Build the final file with the `render-video` skill. If it has sound, set its final volume once, with the `sound-and-music` skill. Check it again. Then give it to them with the `deliver-video` skill. Check it (moment 4).
 10. **Publish, if they want.** the `publish-youtube` skill and the `vertical-shorts` skill.
 
 ### Path 2: edit a recording
 
 1. **Get the files.** Open the upload page right away with the `upload-files` skill. Ask them to send every version of the recording, and any transcript or chat that came with it. If the footage looks reposted, for example it has someone else's watermark, ask about the rights before you plan a public cut.
 2. **Understand.** Who is it for? What's the strongest moment? Should it feel polished, or stay natural? How long should it end up?
-3. **Plan the cut.** Use the `edit-footage` skill. It carries its own transcript, captions, chapters and final volume, so you rarely need the other skills for those. Show the plan in plain words: "I'd open with your line about X, cut 4 minutes of pauses and two stories that wander, and put a list on screen at 6:10." Check it (moment 2).
-4. **Dress it up.** Captions, titles, chapters. Use the `effects-explorer` skill to show options. Check it (moment 3).
-5. **Review and finish.** the `edit-footage` skill covers the render and the final volume. Use the `review-video` skill to look it over, then the `deliver-video` skill to give it to them.
+3. **Read the recording.** Use the `edit-footage` skill, up to its Step 7: look at it, get the words and draft the plan. Do not make the graded copy or render anything yet. That skill carries its own transcript, captions, chapters and final volume, so you rarely need the other skills for those.
+4. **Show options.** Use the `plan-and-choose` skill. Show their own footage in two or three colours, and anything else that matters for this film, such as the opening line, a caption style or a title card. Add the draft cut as numbered lines: "Open on your line about X", "Cut 4 minutes of pauses". If the transcript will take a while, send the colours first. Use the `effects-explorer` skill for titles and captions. Check it (moment 1).
+5. **Agree the final plan** in the chat (moment 2).
+6. **Build.** Carry on with the `edit-footage` skill from its Step 5, with the colour they chose.
+7. **Review and finish.** the `edit-footage` skill covers the render and the final volume. Check the first version (moment 3). Use the `review-video` skill to look it over, then the `deliver-video` skill to give it to them (moment 4).
 
 ### Path 3: short clips from a finished video
 
-Use the `vertical-shorts` skill. Get the video with the `upload-files` skill. Suggest the best three to five moments with your reason for each, and let them choose. Finish with the `deliver-video` skill.
+Use the `vertical-shorts` skill. Get the video with the `upload-files` skill. Suggest the best three to five moments on a page, with a frame and your reason for each, using the `plan-and-choose` skill, and let them choose by number. Agree the plan before you cut. Finish with the `deliver-video` skill.
 
 ### Path 4: "I'm not sure yet"
 
@@ -137,7 +140,7 @@ This is a good place to be, so make it fun. Do not ask them to decide anything a
 
 1. Ask one easy question: "What's on your mind? It could be a topic, a product, a lesson, or something you saw and liked."
 2. Suggest three different video ideas for it, in one or two lines each, with your favourite marked.
-3. Make it real quickly. Use the `effects-explorer` skill to build a small page with a few short clips made with their own words, and link to the public galleries so they can browse.
+3. Make it real quickly. Use the `effects-explorer` skill and the `plan-and-choose` skill to build a small page with a few images or short clips made with their own words, and link to the public galleries so they can browse.
 4. Once something clicks, move to Path 1.
 
 ### Path 5: many videos at once
@@ -159,6 +162,7 @@ Read a skill's file only when you need it. Each one is detailed and works on its
 | the `cloud-setup` skill | Get this computer ready: Remotion, Chrome, ffmpeg, and a check of what the network allows |
 | the `upload-files` skill | Open a private page where the user can send files, big ones too |
 | the `deliver-video` skill | Open a private page where the user can watch and save the finished video |
+| the `plan-and-choose` skill | Show real options on a numbered page, then agree a numbered plan in the chat, before anything long |
 | the `effects-explorer` skill | Search the public effect libraries, make previews, and let the user choose on a page |
 | the `write-script` skill | Write words that sound good when spoken |
 | the `voice-over` skill | Make a narration with a free local voice, or a paid one |
@@ -226,7 +230,7 @@ Round up when you tell the user. Finishing early feels better than finishing lat
 
 ## Showing effects and styles
 
-Whenever there is a choice about how the video looks, offer to show it, and use the `effects-explorer` skill. It makes short previews with the user's own words, and puts them on one page with **Love it**, **Maybe** and **Not for me** buttons.
+Whenever there is a choice about how the video looks, show it. Do not just offer. the `effects-explorer` skill makes short previews with the user's own words. Put them on the same numbered page as everything else (the `plan-and-choose` skill), so that the user has one page and not several.
 
 Suggest effects at these moments:
 
@@ -254,11 +258,11 @@ What it's about, who it's for, where it will be watched, how long.
 - 2026-11-09: Calm look, teal and white. "Not too corporate." They loved the "bold rise" title.
 
 ## Where we are
-Script approved. Voice done. Building the layout. Next: show the first full version.
+Final plan agreed. Voice done. Building the layout. Next: show the first full version.
 
 ## Links
 - Upload page: <link>
-- Effects page: <link>
+- Options and plan page: <link>
 - Delivery page: <link>
 
 ## Files that are not in git
@@ -292,7 +296,7 @@ When the video is delivered:
 ## How to check you are doing this well
 
 - The user could explain what is happening at any moment, without knowing any technical words.
-- They saw real images or clips before you built the whole thing.
+- They saw real options from their own material, and said go to a numbered plan, before you built the whole thing.
 - Every question you asked came with your suggestion.
 - You looked at your own work before they did.
 - They told you what they wanted changed, and you changed it.

@@ -1,0 +1,430 @@
+<title>Your Video Plan</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wght@600;700&family=IBM+Plex+Mono:wght@500;600&family=IBM+Plex+Sans:wght@400;500;600&display=swap">
+<style>
+	/* A production sheet: numbered sections down the page, each line answerable on its own. */
+	:root {
+		--ground: #f7f8f8;
+		--surface: #ffffff;
+		--line: #d9dddf;
+		--ink: #14191c;
+		--body: #2c3438;
+		--muted: #5e686d;
+		--accent: #0b6e69;
+		--accent-ink: #ffffff;
+		--change: #8a5a00;
+		--change-wash: #fbf1dc;
+		--no: #a8321f;
+		--no-wash: #fbe9e5;
+		--yes-wash: #e2f3f1;
+		--display: 'Archivo', ui-sans-serif, system-ui, sans-serif;
+		--sans: 'IBM Plex Sans', ui-sans-serif, system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
+		--mono: 'IBM Plex Mono', ui-monospace, SFMono-Regular, Menlo, monospace;
+	}
+	@media (prefers-color-scheme: dark) {
+		:root:not([data-theme='light']) {
+			color-scheme: dark;
+			--ground: #0e1214;
+			--surface: #171c1f;
+			--line: #2d3539;
+			--ink: #f1f4f5;
+			--body: #d2d8db;
+			--muted: #98a3a8;
+			--accent: #45d3c4;
+			--accent-ink: #052320;
+			--change: #efbd5e;
+			--change-wash: #33280f;
+			--no: #f39a8a;
+			--no-wash: #3a1d18;
+			--yes-wash: #10312e;
+		}
+	}
+	:root[data-theme='dark'] {
+		color-scheme: dark;
+		--ground: #0e1214;
+		--surface: #171c1f;
+		--line: #2d3539;
+		--ink: #f1f4f5;
+		--body: #d2d8db;
+		--muted: #98a3a8;
+		--accent: #45d3c4;
+		--accent-ink: #052320;
+		--change: #efbd5e;
+		--change-wash: #33280f;
+		--no: #f39a8a;
+		--no-wash: #3a1d18;
+		--yes-wash: #10312e;
+	}
+	* { box-sizing: border-box; }
+	body { margin: 0; background: var(--ground); color: var(--body); font: 16px/1.55 var(--sans); }
+	.wrap { max-width: 1080px; margin: 0 auto; padding-block: 32px 72px; padding-left: max(16px, env(safe-area-inset-left, 0px)); padding-right: max(16px, env(safe-area-inset-right, 0px)); display: grid; gap: 40px; }
+	.top { display: grid; gap: 8px; }
+	h1 { color: var(--ink); font: 700 clamp(28px, 6vw, 40px)/1.12 var(--display); margin: 0; text-wrap: balance; }
+	.intro { margin: 0; max-width: 65ch; }
+	section.part { display: grid; gap: 14px; min-width: 0; }
+	.part-head { display: grid; grid-template-columns: auto minmax(0, 1fr); column-gap: 12px; align-items: baseline; border-top: 2px solid var(--ink); padding-top: 12px; }
+	.part-no { font: 600 22px/1.2 var(--mono); color: var(--accent); }
+	h2 { color: var(--ink); font: 600 22px/1.2 var(--display); margin: 0; text-wrap: balance; }
+	.part-why { grid-column: 2; margin: 4px 0 0; max-width: 65ch; }
+	.items { display: grid; grid-template-columns: repeat(auto-fill, minmax(min(300px, 100%), 1fr)); gap: 16px; }
+	.items.plan { grid-template-columns: minmax(0, 1fr); gap: 10px; }
+	.item { background: var(--surface); border: 1px solid var(--line); border-radius: 8px; overflow: hidden; display: flex; flex-direction: column; min-width: 0; }
+	.item[data-verdict='yes'] { border-color: var(--accent); box-shadow: 0 0 0 1px var(--accent); }
+	.item[data-verdict='change'] { border-color: var(--change); box-shadow: 0 0 0 1px var(--change); }
+	.item[data-verdict='no'] { border-color: var(--no); }
+	.item.big { grid-column: 1 / -1; }
+	.zoom { appearance: none; display: block; width: 100%; border: 0; padding: 0; margin: 0; background: #000; cursor: zoom-in; }
+	.item.big .zoom { cursor: zoom-out; }
+	.zoom img { display: block; width: 100%; height: auto; }
+	.item video { display: block; width: 100%; max-width: 100%; background: #000; }
+	.item audio { display: block; width: 100%; margin-top: 2px; }
+	.body { padding: 12px 14px 14px; display: flex; flex-direction: column; gap: 8px; flex: 1; min-width: 0; }
+	.name-row { display: flex; flex-wrap: wrap; gap: 4px 8px; align-items: baseline; }
+	.item-id { font: 600 14px/1.3 var(--mono); color: var(--accent); }
+	h3 { color: var(--ink); font: 600 17px/1.3 var(--sans); margin: 0; min-width: 0; overflow-wrap: anywhere; }
+	.tag { font: 600 12px/1.3 var(--sans); letter-spacing: .02em; color: var(--accent); background: var(--yes-wash); border-radius: 4px; padding: 2px 6px; }
+	.why, .src { margin: 0; overflow-wrap: anywhere; }
+	.why { font-size: 15px; }
+	.src { font-size: 13px; color: var(--muted); }
+	.src a, .more a { color: var(--accent); }
+	.verdicts { display: flex; flex-wrap: wrap; gap: 8px; margin-top: auto; padding-top: 4px; }
+	.verdicts button { appearance: none; border: 1px solid var(--line); background: var(--surface); color: var(--ink); font: 600 14px/1 var(--sans); padding: 10px 12px; border-radius: 6px; cursor: pointer; }
+	.verdicts button[data-v='yes'][aria-pressed='true'] { background: var(--accent); border-color: var(--accent); color: var(--accent-ink); }
+	.verdicts button[data-v='change'][aria-pressed='true'] { background: var(--change-wash); border-color: var(--change); color: var(--change); }
+	.verdicts button[data-v='no'][aria-pressed='true'] { background: var(--no-wash); border-color: var(--no); color: var(--no); }
+	button:focus-visible, textarea:focus-visible, a:focus-visible { outline: 3px solid var(--accent); outline-offset: 2px; }
+	label { display: block; font-size: 14px; color: var(--muted); margin-bottom: 4px; }
+	textarea { display: block; width: 100%; min-height: 56px; font: 15px/1.4 var(--sans); padding: 8px; border: 1px solid var(--line); border-radius: 6px; background: var(--ground); color: var(--ink); }
+	.foot { display: grid; gap: 14px; border-top: 2px solid var(--ink); padding-top: 14px; min-width: 0; }
+	.send { appearance: none; justify-self: start; border: 0; background: var(--accent); color: var(--accent-ink); font: 700 17px/1 var(--display); padding: 15px 22px; border-radius: 6px; cursor: pointer; }
+	.status { margin: 0; color: var(--muted); font-size: 15px; min-height: 1.5em; max-width: 65ch; }
+	.status.err { color: var(--no); }
+	.status.ok { color: var(--accent); font-weight: 600; }
+	.copy-box { display: grid; gap: 8px; min-width: 0; }
+	.copy-box textarea { min-height: 150px; font: 500 13px/1.45 var(--mono); }
+	.copy { appearance: none; justify-self: start; border: 1px solid var(--line); background: var(--surface); color: var(--ink); font: 600 14px/1 var(--sans); padding: 10px 12px; border-radius: 6px; cursor: pointer; }
+	.more { margin: 0; font-size: 15px; }
+</style>
+
+<main class="wrap">
+	<header class="top">
+		<h1 id="title"></h1>
+		<p class="intro" id="intro"></p>
+	</header>
+	<div id="parts" style="display: grid; gap: 40px; min-width: 0"></div>
+	<section class="foot" aria-labelledby="foot-title">
+		<h2 id="foot-title">Anything else?</h2>
+		<div>
+			<label for="general">A style you love, a video you admire, a link, or anything else you would like to try.</label>
+			<textarea id="general"></textarea>
+		</div>
+		<button class="send" id="send" type="button">Submit my answers</button>
+		<p class="status" id="status" aria-live="polite"></p>
+		<div class="copy-box" id="copy-box" hidden>
+			<label for="summary">Your answers, as text</label>
+			<textarea id="summary" readonly></textarea>
+			<button class="copy" id="copy" type="button">Copy my answers</button>
+		</div>
+	</section>
+	<p class="more" id="more" hidden></p>
+</main>
+
+<script type="application/json" id="plan-data">
+	{
+		"title": "Your video plan",
+		"intro": "Look at each numbered part, then tell me what you think in the chat, by number, such as \"1B, and change 3.2\". Or use the buttons here and press Submit. Nothing is final, and you can ask for something completely different.",
+		"round": 1,
+		"sections": [],
+		"moreLinks": []
+	}
+</script>
+
+<script>
+	(function () {
+		'use strict';
+		var D = JSON.parse(document.getElementById('plan-data').textContent);
+		var round = D.round || 1;
+		var el = function (id) { return document.getElementById(id); };
+		var make = function (tag, cls, text) {
+			var n = document.createElement(tag);
+			if (cls) n.className = cls;
+			if (text !== undefined) n.textContent = text;
+			return n;
+		};
+		var WORDS = {yes: 'chosen', change: 'change requested', no: 'not this'};
+		var PLAN_WORDS = {yes: 'approved', change: 'change requested', no: 'not this'};
+		var db = null;
+		var items = {};
+		var answers = {};
+		// One saved answer per item and round, so a changed plan starts clean.
+		var key = function (id) { return 'r' + round + '-' + String(id).replace(/[^A-Za-z0-9-]/g, '-'); };
+
+		el('title').textContent = D.title;
+		el('intro').textContent = D.intro;
+
+		function status(text, kind) {
+			el('status').textContent = text;
+			el('status').className = 'status' + (kind ? ' ' + kind : '');
+		}
+
+		async function write(id, data) {
+			if (!db) return false;
+			try {
+				await db.collection('answers').doc(key(id)).set(Object.assign({id: id, round: round, at: new Date().toISOString()}, data));
+				return true;
+			} catch (e) {
+				return false;
+			}
+		}
+
+		async function save(id) {
+			var a = answers[id] || {};
+			var ok = await write(id, {name: items[id].fullName, verdict: a.verdict || '', note: a.note || ''});
+			if (db && !ok) status('That did not save. Press Submit to copy your answers into the chat instead.', 'err');
+		}
+
+		function paint(id) {
+			var it = items[id];
+			var a = answers[id] || {};
+			it.card.setAttribute('data-verdict', a.verdict || '');
+			Object.keys(it.buttons).forEach(function (v) {
+				it.buttons[v].setAttribute('aria-pressed', String(v === a.verdict));
+			});
+			if (document.activeElement !== it.note) it.note.value = a.note || '';
+		}
+
+		function choose(section, id, verdict) {
+			var a = answers[id] || (answers[id] = {});
+			a.verdict = a.verdict === verdict ? '' : verdict;
+			if (a.verdict === 'yes' && section.pick === 'one') {
+				section.items.forEach(function (other) {
+					var o = answers[other.id];
+					if (other.id !== id && o && o.verdict === 'yes') {
+						o.verdict = '';
+						paint(other.id);
+						save(other.id);
+					}
+				});
+			}
+			paint(id);
+			save(id);
+			if (a.verdict === 'change') {
+				items[id].note.focus();
+				status('Say what to change in the box under ' + id + '.');
+			}
+		}
+
+		(D.sections || []).forEach(function (s) {
+			var isPlan = s.kind === 'plan';
+			var part = make('section', 'part');
+			part.id = 'part-' + s.number;
+			var head = make('div', 'part-head');
+			head.appendChild(make('span', 'part-no', s.number));
+			head.appendChild(make('h2', '', s.name));
+			if (s.why) head.appendChild(make('p', 'part-why', s.why));
+			part.appendChild(head);
+			var grid = make('div', isPlan ? 'items plan' : 'items');
+			(s.items || []).forEach(function (c) {
+				var card = make('article', 'item');
+				card.setAttribute('data-verdict', '');
+				if (c.image) {
+					var zoom = make('button', 'zoom');
+					zoom.type = 'button';
+					zoom.setAttribute('aria-label', 'Make ' + c.id + ' bigger or smaller');
+					var img = make('img');
+					img.src = c.image;
+					img.alt = c.alt || c.name;
+					img.loading = 'lazy';
+					zoom.appendChild(img);
+					zoom.addEventListener('click', function () { card.classList.toggle('big'); });
+					card.appendChild(zoom);
+				}
+				if (c.video) {
+					var v = make('video');
+					v.src = c.video;
+					v.controls = true;
+					v.loop = true;
+					v.muted = true;
+					v.autoplay = true;
+					v.playsInline = true;
+					v.preload = 'metadata';
+					card.appendChild(v);
+				}
+				var body = make('div', 'body');
+				var row = make('div', 'name-row');
+				row.appendChild(make('span', 'item-id', c.id));
+				row.appendChild(make('h3', '', c.name));
+				if (c.recommended) row.appendChild(make('span', 'tag', 'My suggestion'));
+				body.appendChild(row);
+				if (c.why) body.appendChild(make('p', 'why', c.why));
+				if (c.audio) {
+					var au = make('audio');
+					au.src = c.audio;
+					au.controls = true;
+					au.preload = 'none';
+					body.appendChild(au);
+				}
+				if (c.source) {
+					var src = make('p', 'src', 'From: ');
+					if (c.sourceUrl) {
+						var link = make('a', '', c.source);
+						link.href = c.sourceUrl;
+						link.target = '_blank';
+						link.rel = 'noopener';
+						src.appendChild(link);
+					} else {
+						src.appendChild(document.createTextNode(c.source));
+					}
+					body.appendChild(src);
+				}
+				var buttons = {};
+				var verdicts = make('div', 'verdicts');
+				[['yes', isPlan ? 'Approve' : 'Choose this'], ['change', 'Change this'], ['no', 'Not this']].forEach(function (pair) {
+					var b = make('button', '', pair[1]);
+					b.type = 'button';
+					b.setAttribute('data-v', pair[0]);
+					b.setAttribute('aria-pressed', 'false');
+					b.addEventListener('click', function () { choose(s, c.id, pair[0]); });
+					buttons[pair[0]] = b;
+					verdicts.appendChild(b);
+				});
+				body.appendChild(verdicts);
+				var wrap = make('div');
+				var note = make('textarea');
+				note.id = 'note-' + key(c.id);
+				var lab = make('label', '', 'Comment, or what to change');
+				lab.htmlFor = note.id;
+				note.addEventListener('change', function () {
+					(answers[c.id] || (answers[c.id] = {})).note = note.value;
+					save(c.id);
+				});
+				wrap.appendChild(lab);
+				wrap.appendChild(note);
+				body.appendChild(wrap);
+				card.appendChild(body);
+				grid.appendChild(card);
+				items[c.id] = {card: card, buttons: buttons, note: note, plan: isPlan, section: s, fullName: c.name};
+			});
+			part.appendChild(grid);
+			el('parts').appendChild(part);
+		});
+
+		if (D.moreLinks && D.moreLinks.length) {
+			var more = el('more');
+			more.hidden = false;
+			more.appendChild(document.createTextNode('Want to browse more yourself? '));
+			D.moreLinks.forEach(function (l, i) {
+				if (i) more.appendChild(document.createTextNode(' · '));
+				var a = make('a', '', l.label);
+				a.href = l.url;
+				a.target = '_blank';
+				a.rel = 'noopener';
+				more.appendChild(a);
+			});
+		}
+
+		function summary() {
+			var lines = [];
+			var open = [];
+			(D.sections || []).forEach(function (s) {
+				lines.push(s.number + ' ' + s.name);
+				var answered = false;
+				(s.items || []).forEach(function (c) {
+					var a = answers[c.id] || {};
+					var it = items[c.id];
+					var note = (it.note.value || '').trim();
+					if (a.verdict || note) {
+						answered = true;
+						var word = a.verdict ? (it.plan ? PLAN_WORDS : WORDS)[a.verdict] : 'comment';
+						lines.push('  ' + c.id + ' ' + c.name + ': ' + word + (note ? '. "' + note + '"' : ''));
+					} else if (s.kind === 'plan') {
+						open.push(c.id);
+					}
+				});
+				if (!answered && s.kind !== 'plan') open.push(s.number);
+			});
+			var general = el('general').value.trim();
+			if (general) lines.push('Anything else: "' + general + '"');
+			return {text: lines.join('\n'), open: open};
+		}
+
+		function showCopy(text) {
+			el('summary').value = text;
+			el('copy-box').hidden = false;
+		}
+
+		el('send').addEventListener('click', async function () {
+			Object.keys(items).forEach(function (id) {
+				var value = items[id].note.value;
+				var a = answers[id] || (answers[id] = {});
+				if ((a.note || '') !== value) {
+					a.note = value;
+					save(id);
+				}
+			});
+			var s = summary();
+			var left = s.open.length ? ' You left ' + s.open.join(', ') + ' open, so my suggestion stands there unless you say otherwise.' : '';
+			var ok = await write('_submitted', {summary: s.text, open: s.open});
+			if (ok) {
+				status('Sent. Go back to the chat and say "done", and I will read them.' + left, 'ok');
+				el('copy-box').hidden = true;
+			} else {
+				status('This page could not send them. Copy your answers below, and paste them into the chat.' + left, 'err');
+				showCopy(s.text);
+			}
+		});
+
+		el('copy').addEventListener('click', function () {
+			var box = el('summary');
+			var done = function () { status('Copied. Paste them into the chat.', 'ok'); };
+			var fail = function () {
+				box.focus();
+				box.select();
+				status('Press copy on your keyboard, then paste them into the chat.');
+			};
+			try {
+				navigator.clipboard.writeText(box.value).then(done, fail);
+			} catch (e) {
+				fail();
+			}
+		});
+
+		el('general').addEventListener('change', function () {
+			write('_general', {note: el('general').value});
+		});
+
+		(async function () {
+			var C = window.claude;
+			if (!C || typeof C.use !== 'function') {
+				status('Open this page from its claude.ai link to send your answers directly. You can still look through it, press Submit, and paste your answers into the chat.');
+				return;
+			}
+			db = await C.use('db').catch(function () { return null; });
+			if (!db) {
+				status('Sending is not available in this view. You can still look through it, press Submit, and paste your answers into the chat.');
+				return;
+			}
+			db.collection('answers').onSnapshot(
+				function (snap) {
+					snap.docs.forEach(function (d) {
+						if (!d.exists) return;
+						var data = d.data() || {};
+						if (data.round !== round) return;
+						if (data.id === '_general') {
+							if (document.activeElement !== el('general')) el('general').value = data.note || '';
+							return;
+						}
+						if (!items[data.id]) return;
+						answers[data.id] = {verdict: data.verdict || '', note: data.note || ''};
+						paint(data.id);
+					});
+				},
+				function () {
+					status('Saved answers could not load. Reload the page to see them.', 'err');
+				},
+			);
+		})();
+	})();
+</script>
