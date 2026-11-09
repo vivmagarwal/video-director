@@ -305,14 +305,14 @@ python3 ../use-local-fonts.py
 
 On a Mac with the network denied, three library effects stopped with that same timeout before it and rendered after it, and their frames looked the same as the Google Fonts versions. **Never use `--ignore-certificate-errors`.** The session's proxy rules forbid turning off certificate checks.
 
-**Then check the words it will show.** Most library effects carry sample text, which appears on screen unless you change it. Some of it does harm if you miss it: `quote-slam` credits its sample quote to a real person who never said it, `stat-slam` shows a made-up number, claim and source, and `headline-highlight` shows a made-up byline, date and an "Add Frame News on Google" chip. This lists them:
+**Then check the words it will show.** Most library effects carry sample text, which appears on screen unless you change it. Some of it does harm if you miss it, such as a made-up number, name, date or source on a video people take as real. This lists it:
 
 ```bash
 cd /path/to/project/fx/previews
 python3 ../check-effect-text.py src/effects/KineticWordReveal.tsx
 ```
 
-Replace each one with the user's words through its prop. To hide a line, pass an empty string, then look at the frame, because a rule or a dash can stay behind. Text written straight into the JSX has no prop, so edit or delete that block in your copy, as the chip in `headline-highlight` needs. Never leave a name, a number or a source the user did not give you.
+Replace each one with the user's words through its prop. To hide a line, pass an empty string, then look at the frame, because a rule or a dash can stay behind. Text written straight into the JSX has no prop, so edit or delete that block in your copy. Never leave a name, a number or a source the user did not give you.
 
 Each effect is written to be a single file with no shared helpers, so copying one file is enough. Read the top of the file to learn its props. Many take a `theme` prop that restyles the whole effect, and each lists the keys it needs. **The copy is yours, so edit it freely**: a smaller font size, centred text or a warmer colour. Expect to do this for most effects, and look again afterwards, because one edit can cause another problem, such as clipping the tail of a "g".
 
